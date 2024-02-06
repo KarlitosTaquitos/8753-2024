@@ -8,6 +8,7 @@ import frc.robot.Constants.DriverConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.ToggleDrivingMode;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,6 +30,9 @@ public class RobotContainer {
   private final DriveTrain driveTrain = new DriveTrain();
 
   private final CommandJoystick driver = new CommandJoystick(DriverConstants.controllerPort);
+
+  // Commands
+  private final ToggleDrivingMode toggledriveMode = new ToggleDrivingMode(driveTrain);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -62,12 +66,14 @@ public class RobotContainer {
     // // cancelling on release.
     // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
 
+    driver.button(DriverConstants.start).onTrue(toggledriveMode);
+
     driveTrain.setDefaultCommand(
         new RunCommand(() -> {
           driveTrain.drive(
-              driver.getRawAxis(DriverConstants.leftY) * 0.1,
-              driver.getRawAxis(DriverConstants.leftX) * 0.1,
-              driver.getRawAxis(DriverConstants.rightX) * 0.1);
+              driver.getRawAxis(DriverConstants.leftY) * DriverConstants.driveMult,
+              driver.getRawAxis(DriverConstants.leftX) * DriverConstants.driveMult,
+              driver.getRawAxis(DriverConstants.rightX) * DriverConstants.driveMult);
         }, driveTrain));
   }
 

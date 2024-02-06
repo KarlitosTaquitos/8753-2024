@@ -49,9 +49,12 @@ public class DriveTrain extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
+  public void toggleMode() {
+    fieldOriented = !fieldOriented;
+  }
+
   public void drive(double forward, double strafe, double turn) {
     if (fieldOriented) {
-      System.out.println(navx.getRotation2d());
       driveFieldOriented(forward, strafe, turn);
     } else
       driveRobotOriented(forward, strafe, turn);
@@ -63,9 +66,5 @@ public class DriveTrain extends SubsystemBase {
 
   public void driveRobotOriented(double forward, double strafe, double turn) {
     mecanumDrive.driveCartesian(-forward, strafe, turn);
-  }
-
-  public void toggleFieldOrientedDrive() {
-    fieldOriented = !fieldOriented;
   }
 }

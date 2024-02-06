@@ -21,6 +21,10 @@ public final class Constants {
     public static final int leftY = 1;
     public static final int rightX = 4;
     public static final int rightY = 5;
+
+    public static final int start = 7;
+
+    public static final double driveMult = 0.1;
   }
 
   public static class OperatorConstants {
