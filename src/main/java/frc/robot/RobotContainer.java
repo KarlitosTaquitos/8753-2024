@@ -8,6 +8,7 @@ import frc.robot.Constants.DriverConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.ResetDegree;
 import frc.robot.commands.ToggleDrivingMode;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.ExampleSubsystem;
@@ -33,6 +34,7 @@ public class RobotContainer {
 
   // Commands
   private final ToggleDrivingMode toggledriveMode = new ToggleDrivingMode(driveTrain);
+  private final ResetDegree resetdegree = new ResetDegree(driveTrain);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -67,6 +69,8 @@ public class RobotContainer {
     // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
 
     driver.button(DriverConstants.start).onTrue(toggledriveMode);
+
+    driver.button(DriverConstants.back).onTrue(resetdegree);
 
     driveTrain.setDefaultCommand(
         new RunCommand(() -> {

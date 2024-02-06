@@ -52,6 +52,10 @@ public class DriveTrain extends SubsystemBase {
   public void toggleMode() {
     fieldOriented = !fieldOriented;
   }
+  
+  public void resetDegree(){
+    navx.reset();
+  }
 
   public void drive(double forward, double strafe, double turn) {
     if (fieldOriented) {
