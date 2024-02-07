@@ -57,11 +57,19 @@ public class DriveTrain extends SubsystemBase {
     navx.reset();
   }
 
+  public void turnToCardinalDirection() {
+    
+  }
+  public double getAngle() {
+    return navx.getRotation2d().getDegrees();
+  }
+
   public void drive(double forward, double strafe, double turn) {
     if (fieldOriented) {
       driveFieldOriented(forward, strafe, turn);
     } else
       driveRobotOriented(forward, strafe, turn);
+      
   }
 
   public void driveFieldOriented(double forward, double strafe, double turn) {
