@@ -79,7 +79,9 @@ public class RobotContainer {
           driveTrain.drive(
               driver.getRawAxis(DriverConstants.leftY) * DriverConstants.driveMult,
               driver.getRawAxis(DriverConstants.leftX) * DriverConstants.driveMult,
-              driver.getRawAxis(DriverConstants.rightX) * DriverConstants.driveMult);
+              driver.getRawAxis(DriverConstants.rightX) * DriverConstants.driveMult,
+              driver.button(DriverConstants.leftBumper).getAsBoolean(),
+              driver.button(DriverConstants.rightBumper).getAsBoolean());
         }, driveTrain));
   }
 

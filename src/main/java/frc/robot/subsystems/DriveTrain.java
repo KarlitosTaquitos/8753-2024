@@ -21,10 +21,17 @@ public class DriveTrain extends SubsystemBase {
 
   AHRS navx;
 
+  TurnState turnState = TurnState.WAITING;
+
+  double turnAngle, oldAngle;
+
+  final double TURN_TOLERANCE = 2.0;
+
   boolean fieldOriented = true;
 
   /** Creates a new DriveTrain. */
   public DriveTrain() {
+
 
     // Drive motors
     frontLeftMotor = new CANSparkMax(Constants.MotorControllerConstants.frontLeft, MotorType.kBrushless);
@@ -56,17 +63,53 @@ public class DriveTrain extends SubsystemBase {
   public void resetDegree(){
     navx.reset();
   }
-
-  public void turnToCardinalDirection() {
-    
-  }
+  //returns angle in degrees. degree is continuous so once it hits 360 it goes to 361 and so on
   public double getAngle() {
     return navx.getRotation2d().getDegrees();
   }
 
-  public void drive(double forward, double strafe, double turn) {
+  public void drive(double forward, double strafe, double turn, boolean rightBumper, boolean leftBumper) {
     if (fieldOriented) {
-      driveFieldOriented(forward, strafe, turn);
+      switch(turnState) {
+        case WAITING:
+          driveFieldOriented(forward, strafe, turn);
+
+          if(rightBumper) {
+            oldAngle = getAngle();
+            turnAngle = getAngle();
+            while(turnAngle > 90) {
+              turn -= 90;
+            }
+            while(turnAngle < 0) {
+              turn =+ 90;
+            }
+
+            turnState = TurnState.TURNING_RIGHT;
+          }
+          if(leftBumper) {
+            oldAngle = getAngle();
+            turnAngle = getAngle();
+            while(turnAngle > 90) {
+              turn -= 90;
+            }
+            while(turnAngle < 0) {
+              turn =+ 90;
+            }
+            turnAngle = 90 - turnAngle;
+
+            turnState = TurnState.TURNING_LEFT;
+          }
+        case TURNING_RIGHT:
+          driveFieldOriented(forward, strafe, .5);
+          if(oldAngle - getAngle() - turnAngle < TURN_TOLERANCE && oldAngle - getAngle() - turnAngle > -TURN_TOLERANCE) {
+            turnState = TurnState.WAITING;
+          }
+        case TURNING_LEFT:
+          driveFieldOriented(forward, strafe, -.5);
+          if(oldAngle - getAngle() - turnAngle < TURN_TOLERANCE && oldAngle - getAngle() - turnAngle > -TURN_TOLERANCE) {
+            turnState = TurnState.WAITING;
+          }
+        }
     } else
       driveRobotOriented(forward, strafe, turn);
       
@@ -78,5 +121,10 @@ public class DriveTrain extends SubsystemBase {
 
   public void driveRobotOriented(double forward, double strafe, double turn) {
     mecanumDrive.driveCartesian(-forward, strafe, turn);
+  }
+  private enum TurnState {
+    WAITING,
+    TURNING_LEFT,
+    TURNING_RIGHT
   }
 }
