@@ -24,8 +24,8 @@ public final class Constants {
 
     public static final int start = 8;
     public static final int back = 7;
-    public static final int leftBumper = 9;
-    public static final int rightBumper = 10;
+    public static final int leftBumper = 5;
+    public static final int rightBumper = 6;
     
     public static final double driveMult = 0.1;
   }

@@ -88,6 +88,7 @@ public class DriveTrain extends SubsystemBase {
 
             turnState = TurnState.TURNING_LEFT;
           }
+          break;
         case TURNING_RIGHT:
           driveFieldOriented(forward, strafe, .5);
           
@@ -96,19 +97,24 @@ public class DriveTrain extends SubsystemBase {
               if(getAngle() < TURN_TOLERANCE && getAngle() > -TURN_TOLERANCE) {
                 turnState = TurnState.WAITING;
               }
+              break;
             case 1:
               if(getAngle() < TURN_TOLERANCE + 90 && getAngle() > -TURN_TOLERANCE + 90) {
                 turnState = TurnState.WAITING;
               }
+              break;
             case 2:
               if(getAngle() < TURN_TOLERANCE + 180 && getAngle() > -TURN_TOLERANCE + 180) {
                 turnState = TurnState.WAITING;
               }
+              break;
             case 3:
               if(getAngle() < TURN_TOLERANCE + 270 && getAngle() > -TURN_TOLERANCE + 270) {
                 turnState = TurnState.WAITING;
               }
+              break;
           }
+          break;
         case TURNING_LEFT:
           driveFieldOriented(forward, strafe, -.5);
           
@@ -117,19 +123,24 @@ public class DriveTrain extends SubsystemBase {
               if(getAngle() < TURN_TOLERANCE + 90 && getAngle() > -TURN_TOLERANCE + 90) {
                 turnState = TurnState.WAITING;
               }
+              break;
             case 1:
               if(getAngle() < TURN_TOLERANCE + 180 && getAngle() > -TURN_TOLERANCE + 180) {
                 turnState = TurnState.WAITING;
               }
+              break;
             case 2:
               if(getAngle() < TURN_TOLERANCE + 270 && getAngle() > -TURN_TOLERANCE + 270) {
                 turnState = TurnState.WAITING;
               }
+              break;
             case 3:
               if(getAngle() < TURN_TOLERANCE && getAngle() > -TURN_TOLERANCE) {
                 turnState = TurnState.WAITING;
               }
+              break;
           }
+          break;
         }
     } else
       driveRobotOriented(forward, strafe, turn);
