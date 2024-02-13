@@ -23,7 +23,9 @@ public class DriveTrain extends SubsystemBase {
 
   TurnState turnState = TurnState.WAITING;
 
-  double turnAngle, oldAngle;
+  double oldAngle;
+
+  int quadrant;
 
   final double TURN_TOLERANCE = 2.0;
 
@@ -76,38 +78,57 @@ public class DriveTrain extends SubsystemBase {
 
           if(rightBumper) {
             oldAngle = getAngle();
-            turnAngle = getAngle();
-            while(turnAngle > 90) {
-              turn -= 90;
-            }
-            while(turnAngle < 0) {
-              turn =+ 90;
-            }
+            quadrant = ((int)(getAngle() / 90)) % 4;
 
             turnState = TurnState.TURNING_RIGHT;
           }
           if(leftBumper) {
             oldAngle = getAngle();
-            turnAngle = getAngle();
-            while(turnAngle > 90) {
-              turn -= 90;
-            }
-            while(turnAngle < 0) {
-              turn =+ 90;
-            }
-            turnAngle = 90 - turnAngle;
+            quadrant = ((int)(getAngle() / 90)) % 4;
 
             turnState = TurnState.TURNING_LEFT;
           }
         case TURNING_RIGHT:
           driveFieldOriented(forward, strafe, .5);
-          if(oldAngle - getAngle() - turnAngle < TURN_TOLERANCE && oldAngle - getAngle() - turnAngle > -TURN_TOLERANCE) {
-            turnState = TurnState.WAITING;
+          
+          switch(quadrant) {
+            case 0:
+              if(getAngle() < TURN_TOLERANCE && getAngle() > -TURN_TOLERANCE) {
+                turnState = TurnState.WAITING;
+              }
+            case 1:
+              if(getAngle() < TURN_TOLERANCE + 90 && getAngle() > -TURN_TOLERANCE + 90) {
+                turnState = TurnState.WAITING;
+              }
+            case 2:
+              if(getAngle() < TURN_TOLERANCE + 180 && getAngle() > -TURN_TOLERANCE + 180) {
+                turnState = TurnState.WAITING;
+              }
+            case 3:
+              if(getAngle() < TURN_TOLERANCE + 270 && getAngle() > -TURN_TOLERANCE + 270) {
+                turnState = TurnState.WAITING;
+              }
           }
         case TURNING_LEFT:
           driveFieldOriented(forward, strafe, -.5);
-          if(oldAngle - getAngle() - turnAngle < TURN_TOLERANCE && oldAngle - getAngle() - turnAngle > -TURN_TOLERANCE) {
-            turnState = TurnState.WAITING;
+          
+          switch(quadrant) {
+            case 0:
+              if(getAngle() < TURN_TOLERANCE + 90 && getAngle() > -TURN_TOLERANCE + 90) {
+                turnState = TurnState.WAITING;
+              }
+            case 1:
+              if(getAngle() < TURN_TOLERANCE + 180 && getAngle() > -TURN_TOLERANCE + 180) {
+                turnState = TurnState.WAITING;
+              }
+            case 2:
+              if(getAngle() < TURN_TOLERANCE + 270 && getAngle() > -TURN_TOLERANCE + 270) {
+                turnState = TurnState.WAITING;
+              }
+            case 3:
+              if(getAngle() < TURN_TOLERANCE && getAngle() > -TURN_TOLERANCE) {
+                turnState = TurnState.WAITING;
+              }
           }
         }
     } else
