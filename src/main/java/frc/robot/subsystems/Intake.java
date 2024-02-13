@@ -39,7 +39,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void moveDown() {
-    movementController.setReference(-33, ControlType.kPosition);
+    movementController.setReference(-37, ControlType.kPosition);
     targetPosition = -33;
   }
 
@@ -55,7 +55,7 @@ public class Intake extends SubsystemBase {
 
   public void enablePID() {
     movementController.setP(0.1);
-    movementController.setD(40);
+    movementController.setD(20);
   }
 
   public void disablePID() {
@@ -70,7 +70,7 @@ public class Intake extends SubsystemBase {
       case -15:
         return movementEncoder.getPosition() < -12 && movementEncoder.getPosition() > -17;
       case -33:
-        return movementEncoder.getPosition() < -30;
+        return movementEncoder.getPosition() < -35;
       default:
         return true;
     }
