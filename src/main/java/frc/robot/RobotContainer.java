@@ -10,7 +10,6 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.ResetDegree;
 import frc.robot.commands.ToggleDrivingMode;
-import frc.robot.commands.TurnToCardinalDirection;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -36,7 +35,6 @@ public class RobotContainer {
   // Commands
   private final ToggleDrivingMode toggledriveMode = new ToggleDrivingMode(driveTrain);
   private final ResetDegree resetdegree = new ResetDegree(driveTrain);
-  private final TurnToCardinalDirection turnToCardinalDirection = new TurnToCardinalDirection(driveTrain);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
