@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.Constants.DriverConstants;
 import frc.robot.commands.MoveIntakeInside;
+import frc.robot.commands.MoveIntakeToAmp;
 import frc.robot.commands.MoveIntakeToFloor;
 import frc.robot.commands.ResetDegree;
 import frc.robot.commands.ToggleDrivingMode;
@@ -27,7 +28,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  private final DriveTrain driveTrain = new DriveTrain();
+  public final DriveTrain driveTrain = new DriveTrain();
   private final Intake intake = new Intake();
 
   private final CommandJoystick driver = new CommandJoystick(DriverConstants.controllerPort);
@@ -38,6 +39,7 @@ public class RobotContainer {
 
   private final MoveIntakeToFloor moveIntakeToFloor = new MoveIntakeToFloor(intake);
   private final MoveIntakeInside moveIntakeInside = new MoveIntakeInside(intake);
+  private final MoveIntakeToAmp moveIntakeToAmp = new MoveIntakeToAmp(intake);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -73,6 +75,7 @@ public class RobotContainer {
 
     driver.button(1).onTrue(moveIntakeToFloor);
     driver.button(2).onTrue(moveIntakeInside);
+    driver.button(4).onTrue(moveIntakeToAmp);
 
     driver.button(DriverConstants.start).onTrue(toggledriveMode);
 

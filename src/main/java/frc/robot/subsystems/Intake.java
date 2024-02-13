@@ -55,7 +55,7 @@ public class Intake extends SubsystemBase {
 
   public void enablePID() {
     movementController.setP(0.1);
-    movementController.setD(20);
+    movementController.setD(10);
   }
 
   public void disablePID() {
