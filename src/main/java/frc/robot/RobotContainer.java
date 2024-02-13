@@ -12,6 +12,7 @@ import frc.robot.commands.ResetDegree;
 import frc.robot.commands.ToggleDrivingMode;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -29,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   private final DriveTrain driveTrain = new DriveTrain();
+  private final Shooter shooter = new Shooter();
 
   private final CommandJoystick driver = new CommandJoystick(DriverConstants.controllerPort);
 
@@ -67,6 +69,15 @@ public class RobotContainer {
     // // pressed,
     // // cancelling on release.
     // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+    driver.button(DriverConstants.a)
+        .whileTrue(
+            new RunCommand(() -> {
+              shooter.runShooter();
+            }, shooter))
+        .whileFalse(
+            new RunCommand(() -> {
+              shooter.stopShooter();
+            }, shooter));
 
     driver.button(DriverConstants.start).onTrue(toggledriveMode);
 
