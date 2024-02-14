@@ -23,7 +23,7 @@ public class DriveTrain extends SubsystemBase {
 
   TurnState turnState = TurnState.WAITING;
 
-  double oldAngle;
+  double oldAngle, extraDegrees;
 
   int quadrant;
 
@@ -69,7 +69,8 @@ public class DriveTrain extends SubsystemBase {
   public double getAngle() {
     return navx.getRotation2d().getDegrees();
   }
-
+  //TODO: Account for angle overlap
+  //Optimizations: Add controller, add deadzone
   public void drive(double forward, double strafe, double turn, boolean rightBumper, boolean leftBumper) {
     if (fieldOriented) {
       switch(turnState) {
@@ -78,12 +79,14 @@ public class DriveTrain extends SubsystemBase {
 
           if(rightBumper) {
             oldAngle = getAngle();
+            extraDegrees = 360.0 * ((int)(getAngle() / 360));
             quadrant = ((int)(getAngle() / 90)) % 4;
 
             turnState = TurnState.TURNING_RIGHT;
           }
           if(leftBumper) {
             oldAngle = getAngle();
+            extraDegrees = 360.0 * ((int)(getAngle() / 360));
             quadrant = ((int)(getAngle() / 90)) % 4;
 
             turnState = TurnState.TURNING_LEFT;
@@ -94,22 +97,22 @@ public class DriveTrain extends SubsystemBase {
           
           switch(quadrant) {
             case 0:
-              if(getAngle() < TURN_TOLERANCE && getAngle() > -TURN_TOLERANCE) {
+              if(getAngle() - extraDegrees < TURN_TOLERANCE && getAngle() - extraDegrees > -TURN_TOLERANCE) {
                 turnState = TurnState.WAITING;
               }
               break;
             case 1:
-              if(getAngle() < TURN_TOLERANCE + 90 && getAngle() > -TURN_TOLERANCE + 90) {
+              if(getAngle() - extraDegrees < TURN_TOLERANCE + 90 && getAngle() - extraDegrees > -TURN_TOLERANCE + 90) {
                 turnState = TurnState.WAITING;
               }
               break;
             case 2:
-              if(getAngle() < TURN_TOLERANCE + 180 && getAngle() > -TURN_TOLERANCE + 180) {
+              if(getAngle() - extraDegrees < TURN_TOLERANCE + 180 && getAngle() - extraDegrees > -TURN_TOLERANCE + 180) {
                 turnState = TurnState.WAITING;
               }
               break;
             case 3:
-              if(getAngle() < TURN_TOLERANCE + 270 && getAngle() > -TURN_TOLERANCE + 270) {
+              if(getAngle() - extraDegrees < TURN_TOLERANCE + 270 && getAngle() - extraDegrees > -TURN_TOLERANCE + 270) {
                 turnState = TurnState.WAITING;
               }
               break;
@@ -120,22 +123,22 @@ public class DriveTrain extends SubsystemBase {
           
           switch(quadrant) {
             case 0:
-              if(getAngle() < TURN_TOLERANCE + 90 && getAngle() > -TURN_TOLERANCE + 90) {
+              if(getAngle() - extraDegrees < TURN_TOLERANCE + 90 && getAngle() - extraDegrees > -TURN_TOLERANCE + 90) {
                 turnState = TurnState.WAITING;
               }
               break;
             case 1:
-              if(getAngle() < TURN_TOLERANCE + 180 && getAngle() > -TURN_TOLERANCE + 180) {
+              if(getAngle() - extraDegrees < TURN_TOLERANCE + 180 && getAngle() - extraDegrees > -TURN_TOLERANCE + 180) {
                 turnState = TurnState.WAITING;
               }
               break;
             case 2:
-              if(getAngle() < TURN_TOLERANCE + 270 && getAngle() > -TURN_TOLERANCE + 270) {
+              if(getAngle() - extraDegrees < TURN_TOLERANCE + 270 && getAngle() - extraDegrees > -TURN_TOLERANCE + 270) {
                 turnState = TurnState.WAITING;
               }
               break;
             case 3:
-              if(getAngle() < TURN_TOLERANCE && getAngle() > -TURN_TOLERANCE) {
+              if(getAngle() - extraDegrees < TURN_TOLERANCE && getAngle() - extraDegrees > -TURN_TOLERANCE) {
                 turnState = TurnState.WAITING;
               }
               break;
