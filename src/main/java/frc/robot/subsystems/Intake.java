@@ -33,7 +33,7 @@ public class Intake extends SubsystemBase {
     movementController.setI(0);
     movementController.setD(0);
     movementController.setFF(0);
-    movementController.setOutputRange(-0.2, 0.3);
+    movementController.setOutputRange(-0.4, 0.6);
 
     disablePID();
   }
