@@ -76,15 +76,15 @@ public class DriveTrain extends SubsystemBase {
       switch(turnState) {
         case WAITING:
           driveFieldOriented(forward, strafe, turn);
-
-          if(rightBumper) {
+          //direction mistmatch with bumper looks wrong but it works
+          if(leftBumper) {
             oldAngle = getAngle();
             extraDegrees = 360.0 * ((int)(getAngle() / 360));
             quadrant = ((int)(getAngle() / 90)) % 4;
 
             turnState = TurnState.TURNING_RIGHT;
           }
-          if(leftBumper) {
+          if(rightBumper) {
             oldAngle = getAngle();
             extraDegrees = 360.0 * ((int)(getAngle() / 360));
             quadrant = ((int)(getAngle() / 90)) % 4;
