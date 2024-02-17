@@ -18,14 +18,14 @@ public class Intake extends SubsystemBase {
   CANSparkMax movementMotor;
   SparkPIDController movementController;
   RelativeEncoder movementEncoder;
-
+  CANSparkMax intakeMotor;
   int targetPosition;
 
   /** Creates a new Intake. */
   public Intake() {
     movementMotor = new CANSparkMax(MotorControllerConstants.intakeMovement, MotorType.kBrushless);
     movementMotor.setIdleMode(IdleMode.kCoast);
-
+  
     movementEncoder = movementMotor.getEncoder();
     movementController = movementMotor.getPIDController();
 
@@ -35,9 +35,23 @@ public class Intake extends SubsystemBase {
     movementController.setFF(0);
     movementController.setOutputRange(-0.4, 0.6);
 
+    intakeMotor = new CANSparkMax(MotorControllerConstants.intakeMotor, MotorType.kBrushless);
+
     disablePID();
   }
 
+  public void intake() {
+    intakeMotor.set(.75);
+  }
+
+  public void stopIntake() {
+    intakeMotor.set(0);
+  }
+
+  public void outtake() {
+    intakeMotor.set(-.75);
+  }
+  
   public void moveDown() {
     movementController.setReference(-37, ControlType.kPosition);
     targetPosition = -33;

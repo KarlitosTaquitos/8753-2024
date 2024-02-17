@@ -73,9 +73,27 @@ public class RobotContainer {
     // // cancelling on release.
     // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
 
-    driver.button(1).onTrue(moveIntakeToFloor);
-    driver.button(2).onTrue(moveIntakeInside);
-    driver.button(4).onTrue(moveIntakeToAmp);
+    driver.button(DriverConstants.a).onTrue(moveIntakeToFloor);
+    driver.button(DriverConstants.b).onTrue(moveIntakeInside);
+
+    driver.button(DriverConstants.y).onTrue(
+      new RunCommand(() -> {
+        intake.intake();
+      },intake)
+    ).onFalse(
+      new RunCommand(() -> {
+        intake.stopIntake();
+      },intake)
+    );
+    driver.button(DriverConstants.x).onTrue(
+      new RunCommand(() -> {
+        intake.outtake();
+      },intake)
+    ).onFalse(
+      new RunCommand(() -> {
+        intake.stopIntake();
+      },intake)
+    );
 
     driver.button(DriverConstants.start).onTrue(toggledriveMode);
 
