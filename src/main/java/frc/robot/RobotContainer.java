@@ -12,6 +12,7 @@ import frc.robot.commands.ResetDegree;
 import frc.robot.commands.ToggleDrivingMode;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -30,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   public final DriveTrain driveTrain = new DriveTrain();
   private final Intake intake = new Intake();
+  private final Shooter shooter = new Shooter();
 
   private final CommandJoystick driver = new CommandJoystick(DriverConstants.controllerPort);
 
@@ -77,23 +79,27 @@ public class RobotContainer {
     driver.button(DriverConstants.b).onTrue(moveIntakeInside);
 
     driver.button(DriverConstants.y).onTrue(
-      new RunCommand(() -> {
-        intake.intake();
-      },intake)
-    ).onFalse(
-      new RunCommand(() -> {
-        intake.stopIntake();
-      },intake)
-    );
+        new RunCommand(() -> {
+          intake.intake();
+        }, intake)).onFalse(
+            new RunCommand(() -> {
+              intake.stopIntake();
+            }, intake));
     driver.button(DriverConstants.x).onTrue(
-      new RunCommand(() -> {
-        intake.outtake();
-      },intake)
-    ).onFalse(
-      new RunCommand(() -> {
-        intake.stopIntake();
-      },intake)
-    );
+        new RunCommand(() -> {
+          intake.outtake();
+        }, intake)).onFalse(
+            new RunCommand(() -> {
+              intake.stopIntake();
+            }, intake));
+
+    driver.button(DriverConstants.lB).onTrue(
+        new RunCommand(() -> {
+          shooter.shoot();
+        }, shooter)).onFalse(
+            new RunCommand(() -> {
+              shooter.stop();
+            }, shooter));
 
     driver.button(DriverConstants.start).onTrue(toggledriveMode);
 

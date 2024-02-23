@@ -26,11 +26,12 @@ public final class Constants {
     public static final int b = 2;
     public static final int x = 3;
     public static final int y = 4;
+    public static final int lB = 5;
 
     public static final int start = 8;
     public static final int back = 7;
 
-    public static final double driveMult = 0.25;
+    public static final double driveMult = 0.1;
   }
 
   public static class OperatorConstants {
@@ -43,6 +44,12 @@ public final class Constants {
     public static final int backLeft = 3;
     public static final int backRight = 4;
     public static final int intakeMovement = 5;
-    public static final int intakeMotor = 16;
+    public static final int intakeMotor = 6;
+    public static final int lShooter = 16;
+    public static final int rShooter = 17;
+  }
+
+  public static class SensorConstants {
+    public static final int rangeFinderPort = 0;
   }
 }

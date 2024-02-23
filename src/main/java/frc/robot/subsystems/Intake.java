@@ -11,21 +11,27 @@ import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.MotorControllerConstants;
+import frc.robot.Constants.SensorConstants;
 
 public class Intake extends SubsystemBase {
   CANSparkMax movementMotor;
   SparkPIDController movementController;
   RelativeEncoder movementEncoder;
-  CANSparkMax intakeMotor;
   int targetPosition;
+
+  CANSparkMax intakeMotor;
+
+  AnalogInput rangeFinder;
 
   /** Creates a new Intake. */
   public Intake() {
     movementMotor = new CANSparkMax(MotorControllerConstants.intakeMovement, MotorType.kBrushless);
     movementMotor.setIdleMode(IdleMode.kCoast);
-  
+
     movementEncoder = movementMotor.getEncoder();
     movementController = movementMotor.getPIDController();
 
@@ -36,6 +42,8 @@ public class Intake extends SubsystemBase {
     movementController.setOutputRange(-0.4, 0.6);
 
     intakeMotor = new CANSparkMax(MotorControllerConstants.intakeMotor, MotorType.kBrushless);
+
+    rangeFinder = new AnalogInput(SensorConstants.rangeFinderPort);
 
     disablePID();
   }
@@ -51,7 +59,7 @@ public class Intake extends SubsystemBase {
   public void outtake() {
     intakeMotor.set(-.75);
   }
-  
+
   public void moveDown() {
     movementController.setReference(-37, ControlType.kPosition);
     targetPosition = -33;
@@ -93,5 +101,7 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    double voltageScaleFactor = 5 / RobotController.getVoltage5V();
+    System.out.println(rangeFinder.getValue());
   }
 }
