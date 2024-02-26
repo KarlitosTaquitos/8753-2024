@@ -11,11 +11,8 @@ import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.MotorControllerConstants;
-import frc.robot.Constants.SensorConstants;
 
 public class Intake extends SubsystemBase {
   CANSparkMax movementMotor;
@@ -25,7 +22,9 @@ public class Intake extends SubsystemBase {
 
   CANSparkMax intakeMotor;
 
-  AnalogInput rangeFinder;
+  final int inside = 0;
+  final int amp = -15;
+  final int floor = -43;
 
   /** Creates a new Intake. */
   public Intake() {
@@ -43,8 +42,6 @@ public class Intake extends SubsystemBase {
 
     intakeMotor = new CANSparkMax(MotorControllerConstants.intakeMotor, MotorType.kBrushless);
 
-    rangeFinder = new AnalogInput(SensorConstants.rangeFinderPort);
-
     disablePID();
   }
 
@@ -61,18 +58,18 @@ public class Intake extends SubsystemBase {
   }
 
   public void moveDown() {
-    movementController.setReference(-37, ControlType.kPosition);
-    targetPosition = -33;
+    movementController.setReference(floor, ControlType.kPosition);
+    targetPosition = floor;
   }
 
   public void moveIntoRobot() {
-    movementController.setReference(0, ControlType.kPosition);
-    targetPosition = 0;
+    movementController.setReference(inside, ControlType.kPosition);
+    targetPosition = inside;
   }
 
   public void moveToAmp() {
-    movementController.setReference(-15, ControlType.kPosition);
-    targetPosition = -15;
+    movementController.setReference(amp, ControlType.kPosition);
+    targetPosition = amp;
   }
 
   public void enablePID() {
@@ -87,12 +84,12 @@ public class Intake extends SubsystemBase {
 
   public boolean isAtSetpoint() {
     switch (targetPosition) {
-      case 0:
-        return movementEncoder.getPosition() > 2;
-      case -15:
-        return movementEncoder.getPosition() < -12 && movementEncoder.getPosition() > -17;
-      case -33:
-        return movementEncoder.getPosition() < -35;
+      case inside:
+        return movementEncoder.getPosition() > inside + 2;
+      case amp:
+        return movementEncoder.getPosition() < amp + 2 && movementEncoder.getPosition() > amp - 2;
+      case floor:
+        return movementEncoder.getPosition() < floor + 2;
       default:
         return true;
     }
@@ -101,7 +98,5 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    double voltageScaleFactor = 5 / RobotController.getVoltage5V();
-    System.out.println(rangeFinder.getValue());
   }
 }

@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.Constants.DriverConstants;
+import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.MoveIntakeInside;
 import frc.robot.commands.MoveIntakeToAmp;
 import frc.robot.commands.MoveIntakeToFloor;
@@ -13,10 +14,11 @@ import frc.robot.commands.ToggleDrivingMode;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
@@ -33,7 +35,8 @@ public class RobotContainer {
   private final Intake intake = new Intake();
   private final Shooter shooter = new Shooter();
 
-  private final CommandJoystick driver = new CommandJoystick(DriverConstants.controllerPort);
+  private final XboxController driver = new XboxController(DriverConstants.controllerPort);
+  private final XboxController operator = new XboxController(OperatorConstants.controllerPort);
 
   // Commands
   private final ToggleDrivingMode toggledriveMode = new ToggleDrivingMode(driveTrain);
@@ -42,6 +45,19 @@ public class RobotContainer {
   private final MoveIntakeToFloor moveIntakeToFloor = new MoveIntakeToFloor(intake);
   private final MoveIntakeInside moveIntakeInside = new MoveIntakeInside(intake);
   private final MoveIntakeToAmp moveIntakeToAmp = new MoveIntakeToAmp(intake);
+
+  // Buttons
+  // driver
+  private final JoystickButton driverLB = new JoystickButton(driver, DriverConstants.lB);
+  private final JoystickButton driverStart = new JoystickButton(driver, DriverConstants.start);
+  private final JoystickButton driverBack = new JoystickButton(driver, DriverConstants.back);
+
+  // operator
+  private final JoystickButton operatorA = new JoystickButton(operator, OperatorConstants.a);
+  private final JoystickButton operatorB = new JoystickButton(operator, OperatorConstants.b);
+  private final JoystickButton operatorY = new JoystickButton(operator, OperatorConstants.y);
+  private final JoystickButton operatorLB = new JoystickButton(operator, OperatorConstants.lB);
+  private final JoystickButton operatorRB = new JoystickButton(operator, OperatorConstants.rB);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -59,10 +75,10 @@ public class RobotContainer {
    * predicate, or via the named factories in {@link
    * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
    * {@link
-   * CommandXboxController
+   * XboxController
    * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
    * PS4} controllers or
-   * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
+   * {@link edu.wpi.first.wpilibj2.command.button.XboxController Flight
    * joysticks}.
    */
   private void configureBindings() {
@@ -75,35 +91,51 @@ public class RobotContainer {
     // // cancelling on release.
     // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
 
-    driver.button(DriverConstants.a).onTrue(moveIntakeToFloor);
-    driver.button(DriverConstants.b).onTrue(moveIntakeInside);
+    operatorA.onTrue(moveIntakeToFloor);
+    operatorB.onTrue(moveIntakeInside);
+    operatorY.onTrue(moveIntakeToAmp);
 
-    driver.button(DriverConstants.y).onTrue(
-        new RunCommand(() -> {
-          intake.intake();
-        }, intake)).onFalse(
-            new RunCommand(() -> {
-              intake.stopIntake();
-            }, intake));
-    driver.button(DriverConstants.x).onTrue(
-        new RunCommand(() -> {
-          intake.outtake();
-        }, intake)).onFalse(
-            new RunCommand(() -> {
-              intake.stopIntake();
-            }, intake));
+    { // Intake in
+      operatorLB
+          .onTrue(
+              new RunCommand(() -> {
+                intake.intake();
+              }, intake))
+          .onFalse(
+              new RunCommand(() -> {
+                intake.stopIntake();
+              }, intake));
+    }
 
-    driver.button(DriverConstants.lB).onTrue(
-        new RunCommand(() -> {
-          shooter.shoot();
-        }, shooter)).onFalse(
-            new RunCommand(() -> {
-              shooter.stop();
-            }, shooter));
+    { // Intake out
+      operatorRB
+          .onTrue(
+              new RunCommand(() -> {
+                intake.outtake();
+              }, intake))
+          .onFalse(
+              new RunCommand(() -> {
+                intake.stopIntake();
+              }, intake));
+    }
 
-    driver.button(DriverConstants.start).onTrue(toggledriveMode);
+    { // Shoot
+      driverLB
+          .onTrue(
+              new RunCommand(() -> {
+                shooter.shoot();
+                operator.setRumble(RumbleType.kBothRumble, 0.5);
+              }, shooter))
+          .onFalse(
+              new RunCommand(() -> {
+                shooter.stop();
+                operator.setRumble(RumbleType.kBothRumble, 0);
+              }, shooter));
+    }
 
-    driver.button(DriverConstants.back).onTrue(resetdegree);
+    driverStart.onTrue(toggledriveMode);
+
+    driverBack.onTrue(resetdegree);
 
     driveTrain.setDefaultCommand(
         new RunCommand(() -> {
