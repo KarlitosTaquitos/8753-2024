@@ -12,6 +12,12 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
+import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
+import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.wpilibj.SPI;
 
 public class DriveTrain extends SubsystemBase {
@@ -32,6 +38,8 @@ public class DriveTrain extends SubsystemBase {
     rearLeftMotor = new CANSparkMax(Constants.MotorControllerConstants.backLeft, MotorType.kBrushless);
     rearRightMotor = new CANSparkMax(Constants.MotorControllerConstants.backRight, MotorType.kBrushless);
 
+    
+
     frontRightMotor.setInverted(true);
     rearRightMotor.setInverted(true);
 
@@ -42,7 +50,32 @@ public class DriveTrain extends SubsystemBase {
     // Gyroscope
     navx = new AHRS(SPI.Port.kMXP);
     navx.reset();
+
+    Translation2d m_frontLeftLocation = Constants.OdometryConstants.frontLeftLocation;
+    Translation2d m_frontRightLocation = Constants.OdometryConstants.frontRightLocation;
+    Translation2d m_backLeftLocation = Constants.OdometryConstants.backLeftLocation;
+    Translation2d m_backRightLocation = Constants.OdometryConstants.backRightLocation;
+
+// Creating my kinematics object using the wheel locations.
+    MecanumDriveKinematics m_kinematics = new MecanumDriveKinematics(
+      m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation
+    );
+
+    MecanumDriveOdometry m_odometry = new MecanumDriveOdometry(
+    m_kinematics,
+    getAngleRotation2d(),
+    new MecanumDriveWheelPositions(
+      m_frontLeftEncoder.getDistance(), m_frontRightEncoder.getDistance(),
+      m_backLeftEncoder.getDistance(), m_backRightEncoder.getDistance()
+    ),
+    new Pose2d(5.0, 13.5, new Rotation2d())
+    );
   }
+
+  public Rotation2d getAngleRotation2d() {
+    return navx.getRotation2d().unaryMinus();
+  }
+
 
   @Override
   public void periodic() {
