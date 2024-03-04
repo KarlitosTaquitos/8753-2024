@@ -5,6 +5,9 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism;
 import frc.robot.Constants;
 import frc.robot.Robot;
 
@@ -36,25 +39,15 @@ public class DriveTrain extends SubsystemBase {
   Pose2d robotPose = new Pose2d(0,0, new Rotation2d());
 
 
-  Translation2d m_frontLeftLocation = Constants.OdometryConstants.frontLeftLocation;
-  Translation2d m_frontRightLocation = Constants.OdometryConstants.frontRightLocation;
-  Translation2d m_backLeftLocation = Constants.OdometryConstants.backLeftLocation;
-  Translation2d m_backRightLocation = Constants.OdometryConstants.backRightLocation;
+  Translation2d m_frontLeftLocation;
+  Translation2d m_frontRightLocation;
+  Translation2d m_backLeftLocation;
+  Translation2d m_backRightLocation;
 
 // Creating my kinematics object using the wheel locations.
-  MecanumDriveKinematics m_kinematics = new MecanumDriveKinematics(
-    m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation
-  );
+  MecanumDriveKinematics m_kinematics;
 
-  MecanumDriveOdometry m_odometry = new MecanumDriveOdometry(
-  m_kinematics,
-  getAngleRotation2d(),
-  new MecanumDriveWheelPositions(
-    fLEncoder.getPosition(), fREncoder.getPosition(),
-    rLEncoder.getPosition(), rREcnoder.getPosition()
-  ),
-  robotPose
-  );
+  MecanumDriveOdometry m_odometry;
 
     
   /** Creates a new DriveTrain. */
@@ -81,6 +74,25 @@ public class DriveTrain extends SubsystemBase {
     // Gyroscope
     navx = new AHRS(SPI.Port.kMXP);
     navx.reset();
+
+    m_frontLeftLocation = Constants.OdometryConstants.frontLeftLocation;
+    m_frontRightLocation = Constants.OdometryConstants.frontRightLocation;
+    m_backLeftLocation = Constants.OdometryConstants.backLeftLocation;
+    m_backRightLocation = Constants.OdometryConstants.backRightLocation;
+
+    m_kinematics = new MecanumDriveKinematics(
+      m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation
+    );
+
+    m_odometry = new MecanumDriveOdometry(
+    m_kinematics,
+    getAngleRotation2d(),
+    new MecanumDriveWheelPositions(
+      fLEncoder.getPosition(), fREncoder.getPosition(),
+      rLEncoder.getPosition(), rREcnoder.getPosition()
+    ),
+    robotPose
+    );
   }
 
   public Rotation2d getAngleRotation2d() {
@@ -101,7 +113,7 @@ public class DriveTrain extends SubsystemBase {
 
     // Update the pose
     robotPose = m_odometry.update(gyroAngle, wheelPositions);
-    
+
     printPose(robotPose);
   }
 
