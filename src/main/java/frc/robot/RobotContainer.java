@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -71,6 +72,18 @@ public class RobotContainer {
     driver.button(DriverConstants.start).onTrue(toggledriveMode);
 
     driver.button(DriverConstants.back).onTrue(resetdegree);
+
+    driver.button(DriverConstants.a)
+        .whileTrue(driveTrain.sysIdDynamic(SysIdRoutine.Direction.kForward));
+
+    driver.button(DriverConstants.b)
+        .whileTrue(driveTrain.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+    driver.button(DriverConstants.x)
+        .whileTrue(driveTrain.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+
+    driver.button(DriverConstants.y)
+        .whileTrue(driveTrain.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
 
     driveTrain.setDefaultCommand(
         new RunCommand(() -> {

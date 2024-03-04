@@ -24,6 +24,11 @@ public final class Constants {
     public static final int rightX = 4;
     public static final int rightY = 5;
 
+    public static final int a = 1;
+    public static final int b = 2;
+    public static final int x = 3;
+    public static final int y = 4;
+
     public static final int start = 8;
     public static final int back = 7;
 
