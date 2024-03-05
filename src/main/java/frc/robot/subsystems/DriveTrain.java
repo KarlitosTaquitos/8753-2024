@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism;
 import frc.robot.Constants;
 import frc.robot.Robot;
 
+import java.math.BigDecimal;
+
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -18,6 +20,7 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -115,7 +118,6 @@ public class DriveTrain extends SubsystemBase {
 
     // Get the rotation of the robot from the gyro.
     var gyroAngle = getAngleRotation2d();
-
     // Update the pose
     robotPose = m_odometry.update(gyroAngle, wheelPositions);
 
@@ -123,10 +125,27 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public void printPose(Pose2d robotPose) {
-    String x = String.format("X: %.2f", robotPose.getX());
-    String y = String.format("Y: %.2f", robotPose.getY());
-    String angle = String.format("Angle: %.2f", MathUtil.angleModulus(robotPose.getRotation().getDegrees()));
-    System.out.println(x + "\n" + y + "\n" + angle);
+    BigDecimal x = new BigDecimal(robotPose.getX());
+    x.setScale(3);
+    double X = x.doubleValue();
+    SmartDashboard.putNumber("X:", X);
+
+    BigDecimal y = new BigDecimal(robotPose.getY());
+    y.setScale(3);
+    double Y = y.doubleValue();
+    SmartDashboard.putNumber("Y: ", Y);
+
+    BigDecimal angle = new BigDecimal(MathUtil.angleModulus(robotPose.getRotation().getDegrees()));
+    angle.setScale(1);
+    double theta = angle.doubleValue();
+    SmartDashboard.putNumber("Heading: ", theta);
+
+    /* 
+    String x = String.format("X: %.3f", robotPose.getX());
+    String y = String.format("Y: %.3f", robotPose.getY());
+    String angle = String.format("Angle: %.1f", MathUtil.angleModulus(robotPose.getRotation().getDegrees()));
+    SmartDashboard.putString("Pose: ", x + "\n" + y + "\n" + angle);
+    */
   }
 
   public void resetPose() {
