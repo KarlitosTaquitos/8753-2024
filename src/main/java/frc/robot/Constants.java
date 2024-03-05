@@ -25,7 +25,7 @@ public final class Constants {
     public static final int rightY = 5;
 
     public static final int a = 1;
-    
+
     public static final int start = 8;
     public static final int back = 7;
 
@@ -42,11 +42,16 @@ public final class Constants {
     public static final int backLeft = 3;
     public static final int backRight = 4;
   }
-
+  //All meters
   public static class OdometryConstants {
     public static final Translation2d frontLeftLocation = new Translation2d(0.2604, 0.2604);
     public static final Translation2d frontRightLocation = new Translation2d(0.2604, -0.2604);
     public static final Translation2d backLeftLocation = new Translation2d(-0.2604, 0.2604);
     public static final Translation2d backRightLocation = new Translation2d(-0.2604, -0.2604);
+
+    public static final double wheelRadius = .1016;
+    public static final double wheelCircumference = wheelRadius * 2 * Math.PI;
+    public static final double chassisGearRatio = 12.5;
+    public static final double revolutionConversionFactor = wheelCircumference / chassisGearRatio;
   }
 }

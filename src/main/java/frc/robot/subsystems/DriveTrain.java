@@ -64,10 +64,10 @@ public class DriveTrain extends SubsystemBase {
     rLEncoder = rearLeftMotor.getEncoder();
     rREncoder = rearRightMotor.getEncoder();
 
-    fLEncoder.setPositionConversionFactor(.638);
-    fREncoder.setPositionConversionFactor(.638);
-    rLEncoder.setPositionConversionFactor(.638);
-    rREncoder.setPositionConversionFactor(.638);
+    fLEncoder.setPositionConversionFactor(Constants.OdometryConstants.revolutionConversionFactor);
+    fREncoder.setPositionConversionFactor(Constants.OdometryConstants.revolutionConversionFactor);
+    rLEncoder.setPositionConversionFactor(Constants.OdometryConstants.revolutionConversionFactor);
+    rREncoder.setPositionConversionFactor(Constants.OdometryConstants.revolutionConversionFactor);
 
     frontRightMotor.setInverted(true);
     rearRightMotor.setInverted(true);
