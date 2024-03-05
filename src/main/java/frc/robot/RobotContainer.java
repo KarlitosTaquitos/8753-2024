@@ -71,6 +71,10 @@ public class RobotContainer {
     driver.button(DriverConstants.start).onTrue(toggledriveMode);
 
     driver.button(DriverConstants.back).onTrue(resetdegree);
+    
+    driver.button(DriverConstants.a).onTrue(new RunCommand(() -> {
+      driveTrain.resetPose();
+    }, driveTrain));
 
     driveTrain.setDefaultCommand(
         new RunCommand(() -> {

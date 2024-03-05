@@ -25,31 +25,31 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
+import edu.wpi.first.math.kinematics.Odometry;
 import edu.wpi.first.wpilibj.SPI;
 
 public class DriveTrain extends SubsystemBase {
   MecanumDrive mecanumDrive;
-  RelativeEncoder fLEncoder, fREncoder, rLEncoder, rREcnoder;
+  RelativeEncoder fLEncoder, fREncoder, rLEncoder, rREncoder;
   CANSparkMax frontLeftMotor, frontRightMotor, rearLeftMotor, rearRightMotor;
 
   AHRS navx;
 
   boolean fieldOriented = true;
 
-  Pose2d robotPose = new Pose2d(0,0, new Rotation2d());
-
+  Pose2d startPose2d = new Pose2d(0, 0, new Rotation2d());
+  Pose2d robotPose;
 
   Translation2d m_frontLeftLocation;
   Translation2d m_frontRightLocation;
   Translation2d m_backLeftLocation;
   Translation2d m_backRightLocation;
 
-// Creating my kinematics object using the wheel locations.
+  // Creating my kinematics object using the wheel locations.
   MecanumDriveKinematics m_kinematics;
 
   MecanumDriveOdometry m_odometry;
 
-    
   /** Creates a new DriveTrain. */
   public DriveTrain() {
 
@@ -62,7 +62,12 @@ public class DriveTrain extends SubsystemBase {
     fLEncoder = frontLeftMotor.getEncoder();
     fREncoder = frontRightMotor.getEncoder();
     rLEncoder = rearLeftMotor.getEncoder();
-    rREcnoder = rearRightMotor.getEncoder();
+    rREncoder = rearRightMotor.getEncoder();
+
+    fLEncoder.setPositionConversionFactor(.638);
+    fREncoder.setPositionConversionFactor(.638);
+    rLEncoder.setPositionConversionFactor(.638);
+    rREncoder.setPositionConversionFactor(.638);
 
     frontRightMotor.setInverted(true);
     rearRightMotor.setInverted(true);
@@ -81,32 +86,32 @@ public class DriveTrain extends SubsystemBase {
     m_backRightLocation = Constants.OdometryConstants.backRightLocation;
 
     m_kinematics = new MecanumDriveKinematics(
-      m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation
-    );
+        m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
 
     m_odometry = new MecanumDriveOdometry(
-    m_kinematics,
-    getAngleRotation2d(),
-    new MecanumDriveWheelPositions(
-      fLEncoder.getPosition(), fREncoder.getPosition(),
-      rLEncoder.getPosition(), rREcnoder.getPosition()
-    ),
-    robotPose
-    );
+        m_kinematics,
+        getAngleRotation2d(),
+        new MecanumDriveWheelPositions(
+            fLEncoder.getPosition(), fREncoder.getPosition(),
+            rLEncoder.getPosition(), rREncoder.getPosition()),
+        startPose2d);
   }
 
   public Rotation2d getAngleRotation2d() {
     return navx.getRotation2d().unaryMinus();
   }
 
+  public MecanumDriveWheelPositions getWheelPositions() {
+    return new MecanumDriveWheelPositions(
+        fLEncoder.getPosition(), fREncoder.getPosition(),
+        rLEncoder.getPosition(), rREncoder.getPosition());
+  }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     // Get my wheel positions
-    var wheelPositions = new MecanumDriveWheelPositions(
-      fLEncoder.getPosition(), fREncoder.getPosition(),
-      rLEncoder.getPosition(), rREcnoder.getPosition());
+    var wheelPositions = getWheelPositions();
 
     // Get the rotation of the robot from the gyro.
     var gyroAngle = getAngleRotation2d();
@@ -117,19 +122,24 @@ public class DriveTrain extends SubsystemBase {
     printPose(robotPose);
   }
 
-public void printPose(Pose2d robotPose) {
-  String x = String.format("X: %.2f", robotPose.getX());
-  String y = String.format("Y: %.2f", robotPose.getY());
-  String angle = String.format("Angle: %.2f", MathUtil.angleModulus(robotPose.getRotation().getDegrees()));
-  System.out.println(x + "\n" + y + "\n" + angle);
-}
-  
+  public void printPose(Pose2d robotPose) {
+    String x = String.format("X: %.2f", robotPose.getX());
+    String y = String.format("Y: %.2f", robotPose.getY());
+    String angle = String.format("Angle: %.2f", MathUtil.angleModulus(robotPose.getRotation().getDegrees()));
+    System.out.println(x + "\n" + y + "\n" + angle);
+  }
+
+  public void resetPose() {
+    m_odometry.resetPosition(getAngleRotation2d(), getWheelPositions(), startPose2d);
+  }
+
   public void toggleMode() {
     fieldOriented = !fieldOriented;
   }
-  
-  public void resetDegree(){
+
+  public void resetDegree() {
     navx.reset();
+    m_odometry.resetPosition(getAngleRotation2d(), getWheelPositions(), robotPose);
   }
 
   public void drive(double forward, double strafe, double turn) {
