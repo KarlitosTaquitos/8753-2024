@@ -52,6 +52,21 @@ public final class Constants {
     public static final double wheelRadius = .1016;
     public static final double wheelCircumference = wheelRadius * 2 * Math.PI;
     public static final double chassisGearRatio = 12.5;
-    public static final double revolutionConversionFactor = wheelCircumference / chassisGearRatio;
+    public static final double encoderDistancePerPulse = wheelCircumference / chassisGearRatio;
+
+    public static final double ksVolts = 0;
+    public static final double kvVoltSecondsPerMeter = 0;
+    public static final double kaVoltSecondsSquaredPerMeter = 0;
+
+    public static final double kPDriveVel = 0;
+  }
+  
+  public static final class AutoConstants {
+    public static final double kMaxSpeedMetersPerSecond = 3;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 1;
+
+    // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
+    public static final double kRamseteB = 2;
+    public static final double kRamseteZeta = 0.7;
   }
 }
