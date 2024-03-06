@@ -10,7 +10,9 @@ import frc.robot.commands.MoveIntakeInside;
 import frc.robot.commands.MoveIntakeToAmp;
 import frc.robot.commands.MoveIntakeToFloor;
 import frc.robot.commands.ResetDegree;
+import frc.robot.commands.ToggleClimberLimit;
 import frc.robot.commands.ToggleDrivingMode;
+import frc.robot.subsystems.Climbers;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
@@ -31,9 +33,11 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  // Subsystems
   public final DriveTrain driveTrain = new DriveTrain();
   private final Intake intake = new Intake();
   private final Shooter shooter = new Shooter();
+  private final Climbers climbers = new Climbers();
 
   private final XboxController driver = new XboxController(DriverConstants.controllerPort);
   private final XboxController operator = new XboxController(OperatorConstants.controllerPort);
@@ -45,6 +49,8 @@ public class RobotContainer {
   private final MoveIntakeToFloor moveIntakeToFloor = new MoveIntakeToFloor(intake);
   private final MoveIntakeInside moveIntakeInside = new MoveIntakeInside(intake);
   private final MoveIntakeToAmp moveIntakeToAmp = new MoveIntakeToAmp(intake);
+
+  private final ToggleClimberLimit toggleClimberLimit = new ToggleClimberLimit(climbers);
 
   // Buttons
   // driver
@@ -58,6 +64,7 @@ public class RobotContainer {
   private final JoystickButton operatorY = new JoystickButton(operator, OperatorConstants.y);
   private final JoystickButton operatorLB = new JoystickButton(operator, OperatorConstants.lB);
   private final JoystickButton operatorRB = new JoystickButton(operator, OperatorConstants.rB);
+  private final JoystickButton operatorStart = new JoystickButton(operator, OperatorConstants.start);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -144,6 +151,14 @@ public class RobotContainer {
               driver.getRawAxis(DriverConstants.leftX) * DriverConstants.driveMult,
               driver.getRawAxis(DriverConstants.rightX) * DriverConstants.driveMult);
         }, driveTrain));
+
+    operatorStart.onTrue(toggleClimberLimit);
+
+    climbers.setDefaultCommand(
+        new RunCommand(() -> {
+          climbers.runClimbers(operator.getLeftY(), operator.getRightY());
+        }, climbers));
+
   }
 
   /**

@@ -47,6 +47,7 @@ public final class Constants {
     public static final int y = 4;
     public static final int lB = 5;
     public static final int rB = 6;
+    public static final int start = 8;
   }
 
   public static class MotorControllerConstants {
@@ -54,8 +55,13 @@ public final class Constants {
     public static final int frontRight = 2;
     public static final int backLeft = 3;
     public static final int backRight = 4;
+
     public static final int intakeMovement = 5;
     public static final int intakeMotor = 6;
+
+    public static final int lClimber = 9;
+    public static final int rClimber = 10;
+
     public static final int lShooter = 16;
     public static final int rShooter = 17;
   }
