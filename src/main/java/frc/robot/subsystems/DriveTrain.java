@@ -20,6 +20,7 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -29,6 +30,7 @@ import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.math.kinematics.Odometry;
+import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.SPI;
 
 public class DriveTrain extends SubsystemBase {
@@ -53,6 +55,8 @@ public class DriveTrain extends SubsystemBase {
 
   MecanumDriveOdometry m_odometry;
 
+  private final Field2d m_field = new Field2d();
+
   /** Creates a new DriveTrain. */
   public DriveTrain() {
 
@@ -61,7 +65,7 @@ public class DriveTrain extends SubsystemBase {
     frontRightMotor = new CANSparkMax(Constants.MotorControllerConstants.frontRight, MotorType.kBrushless);
     rearLeftMotor = new CANSparkMax(Constants.MotorControllerConstants.backLeft, MotorType.kBrushless);
     rearRightMotor = new CANSparkMax(Constants.MotorControllerConstants.backRight, MotorType.kBrushless);
-
+    
     fLEncoder = frontLeftMotor.getEncoder();
     fREncoder = frontRightMotor.getEncoder();
     rLEncoder = rearLeftMotor.getEncoder();
@@ -98,6 +102,8 @@ public class DriveTrain extends SubsystemBase {
             fLEncoder.getPosition(), fREncoder.getPosition(),
             rLEncoder.getPosition(), rREncoder.getPosition()),
         startPose2d);
+
+    SmartDashboard.putData("Field", m_field);
   }
 
   public Rotation2d getAngleRotation2d() {
@@ -108,6 +114,7 @@ public class DriveTrain extends SubsystemBase {
     return new MecanumDriveWheelPositions(
         fLEncoder.getPosition(), fREncoder.getPosition(),
         rLEncoder.getPosition(), rREncoder.getPosition());
+
   }
 
   @Override
@@ -140,12 +147,16 @@ public class DriveTrain extends SubsystemBase {
     double theta = angle.doubleValue();
     SmartDashboard.putNumber("Heading: ", theta);
 
-    /* 
-    String x = String.format("X: %.3f", robotPose.getX());
-    String y = String.format("Y: %.3f", robotPose.getY());
-    String angle = String.format("Angle: %.1f", MathUtil.angleModulus(robotPose.getRotation().getDegrees()));
-    SmartDashboard.putString("Pose: ", x + "\n" + y + "\n" + angle);
-    */
+    /*
+     * String x = String.format("X: %.3f", robotPose.getX());
+     * String y = String.format("Y: %.3f", robotPose.getY());
+     * String angle = String.format("Angle: %.1f",
+     * MathUtil.angleModulus(robotPose.getRotation().getDegrees()));
+     * SmartDashboard.putString("Pose: ", x + "\n" + y + "\n" + angle);
+     */
+
+     m_field.setRobotPose(robotPose);
+
   }
 
   public void resetPose() {
