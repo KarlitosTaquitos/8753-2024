@@ -29,6 +29,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
+import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.math.kinematics.Odometry;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.SPI;
@@ -76,6 +77,11 @@ public class DriveTrain extends SubsystemBase {
     rLEncoder.setPositionConversionFactor(Constants.OdometryConstants.encoderDistancePerPulse);
     rREncoder.setPositionConversionFactor(Constants.OdometryConstants.encoderDistancePerPulse);
 
+    fLEncoder.setVelocityConversionFactor(Constants.OdometryConstants.encoderVelocityConversionFactor);
+    fREncoder.setVelocityConversionFactor(Constants.OdometryConstants.encoderVelocityConversionFactor);
+    rLEncoder.setVelocityConversionFactor(Constants.OdometryConstants.encoderVelocityConversionFactor);
+    rREncoder.setVelocityConversionFactor(Constants.OdometryConstants.encoderVelocityConversionFactor);
+    
     resetEncoders();
 
     frontRightMotor.setInverted(true);
@@ -116,7 +122,12 @@ public class DriveTrain extends SubsystemBase {
     return new MecanumDriveWheelPositions(
         fLEncoder.getPosition(), fREncoder.getPosition(),
         rLEncoder.getPosition(), rREncoder.getPosition());
+  }
 
+  public MecanumDriveWheelSpeeds getWheelSpeeds() {
+    return new MecanumDriveWheelSpeeds(
+        fLEncoder.getVelocity(), fREncoder.getVelocity(),
+        rLEncoder.getVelocity(), rREncoder.getVelocity());
   }
 
   @Override
@@ -148,7 +159,7 @@ public class DriveTrain extends SubsystemBase {
     angle.setScale(1);
     double theta = angle.doubleValue();
     SmartDashboard.putNumber("Heading: ", theta);
-
+    
     /*
      * String x = String.format("X: %.3f", robotPose.getX());
      * String y = String.format("Y: %.3f", robotPose.getY());
