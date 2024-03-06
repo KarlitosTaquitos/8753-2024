@@ -82,11 +82,9 @@ public class Robot extends TimedRobot {
     }
   }
 
-  int counter = 0;
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    SmartDashboard.putNumber("Counter", counter++);
   }
 
   @Override

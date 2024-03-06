@@ -145,20 +145,15 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public void printPose(Pose2d robotPose) {
-    BigDecimal x = new BigDecimal(robotPose.getX());
-    x.setScale(3);
-    double X = x.doubleValue();
-    SmartDashboard.putNumber("X:", X);
+    double x = robotPose.getX();
+    SmartDashboard.putNumber("X:", x);
 
-    BigDecimal y = new BigDecimal(robotPose.getY());
-    y.setScale(3);
-    double Y = y.doubleValue();
-    SmartDashboard.putNumber("Y: ", Y);
+    double y = robotPose.getY();
+    SmartDashboard.putNumber("Y: ", y);
 
-    BigDecimal angle = new BigDecimal(MathUtil.angleModulus(robotPose.getRotation().getDegrees()));
-    angle.setScale(1);
-    double theta = angle.doubleValue();
-    SmartDashboard.putNumber("Heading: ", theta);
+    double angle = (robotPose.getRotation().getDegrees());
+    SmartDashboard.putNumber("Heading: ", angle);
+    
     
     /*
      * String x = String.format("X: %.3f", robotPose.getX());
