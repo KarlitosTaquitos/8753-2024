@@ -76,6 +76,8 @@ public class DriveTrain extends SubsystemBase {
     rLEncoder.setPositionConversionFactor(Constants.OdometryConstants.encoderDistancePerPulse);
     rREncoder.setPositionConversionFactor(Constants.OdometryConstants.encoderDistancePerPulse);
 
+    resetEncoders();
+
     frontRightMotor.setInverted(true);
     rearRightMotor.setInverted(true);
 
@@ -107,7 +109,7 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public Rotation2d getAngleRotation2d() {
-    return navx.getRotation2d().unaryMinus();
+    return navx.getRotation2d();
   }
 
   public MecanumDriveWheelPositions getWheelPositions() {
@@ -170,6 +172,13 @@ public class DriveTrain extends SubsystemBase {
   public void resetDegree() {
     navx.reset();
     m_odometry.resetPosition(getAngleRotation2d(), getWheelPositions(), robotPose);
+  }
+
+  public void resetEncoders() {
+    fLEncoder.setPosition(0);
+    fREncoder.setPosition(0);
+    rLEncoder.setPosition(0);
+    rREncoder.setPosition(0);
   }
 
   public void drive(double forward, double strafe, double turn) {
