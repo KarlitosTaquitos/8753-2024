@@ -158,7 +158,7 @@ public class DriveTrain extends SubsystemBase {
      */
 
      m_field.setRobotPose(robotPose);
-
+     SmartDashboard.putData("Field", m_field);
   }
 
   public void resetPose() {
