@@ -26,6 +26,8 @@ public class Intake extends SubsystemBase {
   final int amp = -15;
   final int floor = -43;
 
+  final double manualMovementMult = 0.1;
+
   /** Creates a new Intake. */
   public Intake() {
     movementMotor = new CANSparkMax(MotorControllerConstants.intakeMovement, MotorType.kBrushless);
@@ -93,6 +95,15 @@ public class Intake extends SubsystemBase {
       default:
         return true;
     }
+  }
+
+  public void moveAtSpeed(double speed) {
+    speed *= manualMovementMult;
+
+    if (speed < 0.01 && speed > -0.01)
+      speed = 0;
+    
+    intakeMotor.set(speed);
   }
 
   @Override

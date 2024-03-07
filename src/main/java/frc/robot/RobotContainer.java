@@ -19,6 +19,7 @@ import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -109,7 +110,7 @@ public class RobotContainer {
                 intake.intake();
               }, intake))
           .onFalse(
-              new RunCommand(() -> {
+              new InstantCommand(() -> {
                 intake.stopIntake();
               }, intake));
     }
@@ -121,10 +122,17 @@ public class RobotContainer {
                 intake.outtake();
               }, intake))
           .onFalse(
-              new RunCommand(() -> {
+              new InstantCommand(() -> {
                 intake.stopIntake();
               }, intake));
     }
+
+    //   Intake Default (operator triggers) 
+    intake.setDefaultCommand(
+      new RunCommand(() -> {
+        intake.moveAtSpeed(operator.getRightTriggerAxis() - operator.getLeftTriggerAxis());
+      }, intake)
+    );
 
     { // Shoot
       driverLB
@@ -134,16 +142,19 @@ public class RobotContainer {
                 operator.setRumble(RumbleType.kBothRumble, 0.5);
               }, shooter))
           .onFalse(
-              new RunCommand(() -> {
+              new InstantCommand(() -> {
                 shooter.stop();
                 operator.setRumble(RumbleType.kBothRumble, 0);
               }, shooter));
     }
 
+    // Toggle Driving Mode
     driverStart.onTrue(toggledriveMode);
 
+    // Reset Encoder
     driverBack.onTrue(resetdegree);
 
+    // DriveTrain Default (driver sticks)
     driveTrain.setDefaultCommand(
         new RunCommand(() -> {
           driveTrain.drive(
@@ -154,6 +165,7 @@ public class RobotContainer {
 
     operatorStart.onTrue(toggleClimberLimit);
 
+    // Climbers Default (operator sticks)
     climbers.setDefaultCommand(
         new RunCommand(() -> {
           climbers.runClimbers(operator.getLeftY(), operator.getRightY());
