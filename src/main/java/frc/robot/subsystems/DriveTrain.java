@@ -142,6 +142,7 @@ public class DriveTrain extends SubsystemBase {
     robotPose = m_odometry.update(gyroAngle, wheelPositions);
 
     printPose(robotPose);
+    SmartDashboard.putData("Field", m_field);
   }
 
   public void printPose(Pose2d robotPose) {
@@ -163,7 +164,9 @@ public class DriveTrain extends SubsystemBase {
      * SmartDashboard.putString("Pose: ", x + "\n" + y + "\n" + angle);
      */
 
-     m_field.setRobotPose(robotPose);
+    m_field.setRobotPose(robotPose);
+    SmartDashboard.putData("Field", m_field);
+
 
   }
 
