@@ -1,21 +1,25 @@
 package frc.robot.commands;
 
+import com.fasterxml.jackson.databind.deser.std.StringArrayDeserializer;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveTrain;
 
 public class DriveAmountEncoders extends Command {
     private DriveTrain driveTrain;
-    private double forward, strafe, turn;
-
+    private double forwardDist, strafeDist, turnDist;
+    private double forwardPower, strafePower, turnPower;
+    private double frontLeftDist, frontRightDist, rearLeftDist, rearRightDist;
     private boolean encoderReset = false;
 
   /** Creates a new DriveAmount. */
-  public DriveAmountEncoders(double fowardDist, double strafeDist, double turnDist, DriveTrain dt) {
+  public DriveAmountEncoders(double forwardDist, double strafeDist, double turnDist, DriveTrain dt) {
     driveTrain = dt;
-    forward = fowardDist;
-    strafe = strafeDist;
-    turn = turnDist;
+    this.forwardDist = forwardDist;
+    this.strafeDist = strafeDist;
+    this.turnDist = turnDist;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(driveTrain);
   }
@@ -23,6 +27,16 @@ public class DriveAmountEncoders extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
+        frontLeftDist = forwardDist + strafeDist + turnDist;
+        rearLeftDist = forwardDist - strafeDist + turnDist;
+        frontRightDist = forwardDist - strafeDist - turnDist;
+        rearRightDist = forwardDist + strafeDist - turnDist;
+
+        double maxComponent = Math.max(Math.max(Math.abs(strafeDist), Math.abs(forwardDist)), Math.abs(turnDist));
+
+        forwardPower = forwardDist / maxComponent / 2;
+        strafePower = strafeDist / maxComponent / 2;
+        turnPower = turnDist / maxComponent / 2;
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -33,7 +47,7 @@ public class DriveAmountEncoders extends Command {
             driveTrain.resetEncoders();
         }
 
-        driveTrain.drive(forward, strafe, turn);
+        driveTrain.drive(forwardPower, strafePower, turnPower);
     }
 
     // Called once the command ends or is interrupted.
@@ -41,11 +55,14 @@ public class DriveAmountEncoders extends Command {
     public void end(boolean interrupted) {
         driveTrain.drive(0, 0, 0);
     }
-
+    
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return true;
+        return MathUtil.isNear(frontLeftDist, driveTrain.frontLeftEncoder.getPosition(), 3) &&
+        MathUtil.isNear(frontRightDist, driveTrain.frontRightEncoder.getPosition(), 3) &&
+        MathUtil.isNear(rearLeftDist, driveTrain.rearLeftEncoder.getPosition(), 3) &&
+        MathUtil.isNear(rearRightDist, driveTrain.rearRightEncoder.getPosition(), 3);
     }
 
 }
