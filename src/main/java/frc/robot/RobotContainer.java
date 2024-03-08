@@ -11,6 +11,8 @@ import frc.robot.commands.MoveIntakeInside;
 import frc.robot.commands.MoveIntakeToAmp;
 import frc.robot.commands.MoveIntakeToFloor;
 import frc.robot.commands.ResetDegree;
+import frc.robot.commands.SetToBrake;
+import frc.robot.commands.SetToCoast;
 import frc.robot.commands.ToggleClimberLimit;
 import frc.robot.commands.ToggleDrivingMode;
 import frc.robot.subsystems.Climbers;

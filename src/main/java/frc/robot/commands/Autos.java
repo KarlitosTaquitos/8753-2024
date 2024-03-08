@@ -18,6 +18,21 @@ public final class Autos {
   // return Commands.sequence(subsystem.exampleMethodCommand(), new
   // ExampleCommand(subsystem));
   // }
+  public static Command shootNote(Intake i, Shooter s) {
+    return new ParallelCommandGroup(
+        new RunCommand(() -> i.outtake(), i).withTimeout(2),
+        new RunCommand(() -> s.shoot(), s).withTimeout(2));
+  }
+
+  public static Command intakeProcedure(DriveTrain dt, Intake i) {
+    return new SequentialCommandGroup(
+        new ParallelCommandGroup(
+            new DriveAmount(.15, 0, 0, dt, 1),
+            new RunCommand(() -> i.intake(), i).withTimeout(1)),
+        new ParallelCommandGroup(
+            new DriveAmount(-.15, 0, 0, dt, 1),
+            new RunCommand(() -> i.intake(), i).withTimeout(1)));
+  }
 
   public static Command testAutoDrive(DriveTrain dt, Intake i, Shooter s) {
     return new DriveAmount(0.2, 0, 0, dt, 1);
@@ -31,6 +46,22 @@ public final class Autos {
             new MoveIntakeToFloor(i).withTimeout(3),
             new RunCommand(() -> i.intake(), i).withTimeout(4),
             new MoveIntakeInside(i).withTimeout(3)));
+  }
+
+  //Start Pose in front of amp
+  public static Command startInMiddleTwoNote(DriveTrain dt, Intake i, Shooter s) {
+    return new SequentialCommandGroup(
+      shootNote(i, s),
+      new DriveAmount(.4, 0, 0, dt, 4),
+      intakeProcedure(dt, i),
+      new DriveAmount(-.4, 0, 0, dt, 4),
+      shootNote(i, s)
+    );
+  }
+
+  public static Command startRightTwoNote(DriveTrain dt, Intake i, Shooter s) {
+    return new SequentialCommandGroup(
+      new DriveAmount(0, 0, 0, dt, 0));
   }
 
   private Autos() {

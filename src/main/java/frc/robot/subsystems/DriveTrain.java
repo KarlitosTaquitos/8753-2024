@@ -9,6 +9,8 @@ import frc.robot.Constants;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
@@ -18,7 +20,8 @@ public class DriveTrain extends SubsystemBase {
   MecanumDrive mecanumDrive;
 
   CANSparkMax frontLeftMotor, frontRightMotor, rearLeftMotor, rearRightMotor;
-
+  
+  RelativeEncoder frontLeftEncoder, frontRightEncoder, rearLeftEncoder, rearRightEncoder;
   AHRS navx;
 
   boolean fieldOriented = true;
@@ -31,9 +34,14 @@ public class DriveTrain extends SubsystemBase {
     frontRightMotor = new CANSparkMax(Constants.MotorControllerConstants.frontRight, MotorType.kBrushless);
     rearLeftMotor = new CANSparkMax(Constants.MotorControllerConstants.backLeft, MotorType.kBrushless);
     rearRightMotor = new CANSparkMax(Constants.MotorControllerConstants.backRight, MotorType.kBrushless);
-
+    
     frontRightMotor.setInverted(true);
     rearRightMotor.setInverted(true);
+
+    frontLeftEncoder = frontLeftMotor.getEncoder();
+    frontRightEncoder = frontRightMotor.getEncoder();
+    rearLeftEncoder = rearLeftMotor.getEncoder();
+    rearRightEncoder = rearRightMotor.getEncoder();
 
     // Creating drive system
     mecanumDrive = new MecanumDrive(frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor);
@@ -51,6 +59,27 @@ public class DriveTrain extends SubsystemBase {
 
   public void toggleMode() {
     fieldOriented = !fieldOriented;
+  }
+
+  public void setToBrake() {
+    frontLeftMotor.setIdleMode(IdleMode.kBrake);
+    frontRightMotor.setIdleMode(IdleMode.kBrake);
+    rearLeftMotor.setIdleMode(IdleMode.kBrake);
+    rearRightMotor.setIdleMode(IdleMode.kBrake);
+  }
+
+  public void setToCoast() {
+    frontLeftMotor.setIdleMode(IdleMode.kCoast);
+    frontRightMotor.setIdleMode(IdleMode.kCoast);
+    rearLeftMotor.setIdleMode(IdleMode.kCoast);
+    rearRightMotor.setIdleMode(IdleMode.kCoast);
+  }
+
+  public void resetEncoders() {
+    frontLeftEncoder.setPosition(0);
+    frontRightEncoder.setPosition(0);
+    rearLeftEncoder.setPosition(0);
+    rearRightEncoder.setPosition(0);
   }
 
   public void resetDegree() {
