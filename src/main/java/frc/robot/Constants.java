@@ -35,7 +35,7 @@ public final class Constants {
     public static final int start = 8;
     public static final int back = 7;
 
-    public static final double driveMult = 0.1;
+    public static final double driveMult = .9;
   }
 
   public static class OperatorConstants {
@@ -68,5 +68,11 @@ public final class Constants {
 
   public static class SensorConstants {
     public static final int rangeFinderPort = 0;
+  }
+  //Inches and seconds
+  public static class EncoderConstants {
+    public static final double wheelRadius = 4;
+    public static final double distancePerRevolution = 4 * 2 * Math.PI;
+    public static final double velocityConversionFactor = distancePerRevolution * 60;
   }
 }

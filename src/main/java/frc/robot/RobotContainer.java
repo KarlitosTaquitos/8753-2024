@@ -61,6 +61,7 @@ public class RobotContainer {
   private final JoystickButton driverLB = new JoystickButton(driver, DriverConstants.lB);
   private final JoystickButton driverStart = new JoystickButton(driver, DriverConstants.start);
   private final JoystickButton driverBack = new JoystickButton(driver, DriverConstants.back);
+  private final JoystickButton driverRB = new JoystickButton(driver, OperatorConstants.rB);
 
   // operator
   private final JoystickButton operatorA = new JoystickButton(operator, OperatorConstants.a);
@@ -130,12 +131,11 @@ public class RobotContainer {
               }, intake));
     }
 
-    //   Intake Default (operator triggers) 
+    // Intake Default (operator triggers)
     intake.setDefaultCommand(
-      new RunCommand(() -> {
-        intake.moveAtSpeed(operator.getRightTriggerAxis() - operator.getLeftTriggerAxis());
-      }, intake)
-    );
+        new RunCommand(() -> {
+          intake.moveAtSpeed(operator.getRightTriggerAxis() - operator.getLeftTriggerAxis());
+        }, intake));
 
     { // Shoot
       driverLB
@@ -157,13 +157,22 @@ public class RobotContainer {
     // Reset Encoder
     driverBack.onTrue(resetdegree);
 
+    // Brake
+    driverRB.onTrue(new InstantCommand(() -> {
+      driveTrain.drive(0, 0, 0);
+      driveTrain.setToBrake();
+    }, driveTrain))
+        .onFalse(new InstantCommand(() -> {
+          driveTrain.setToCoast();
+        }, driveTrain));
+
     // DriveTrain Default (driver sticks)
     driveTrain.setDefaultCommand(
         new RunCommand(() -> {
           driveTrain.drive(
               driver.getRawAxis(DriverConstants.leftY) * DriverConstants.driveMult,
               driver.getRawAxis(DriverConstants.leftX) * DriverConstants.driveMult,
-              driver.getRawAxis(DriverConstants.rightX) * DriverConstants.driveMult);
+              driver.getRawAxis(DriverConstants.rightX) * DriverConstants.driveMult * .75);
         }, driveTrain));
 
     operatorStart.onTrue(toggleClimberLimit);
@@ -183,6 +192,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // TODO: Test and choose autos
-    return Autos.testAutoDrive(driveTrain, intake, shooter);
+    return Autos.startRightOneNote(driveTrain, intake, shooter);
   }
 }

@@ -19,9 +19,9 @@ import edu.wpi.first.wpilibj.SPI;
 public class DriveTrain extends SubsystemBase {
   MecanumDrive mecanumDrive;
 
-  CANSparkMax frontLeftMotor, frontRightMotor, rearLeftMotor, rearRightMotor;
+  public CANSparkMax frontLeftMotor, frontRightMotor, rearLeftMotor, rearRightMotor;
   
-  RelativeEncoder frontLeftEncoder, frontRightEncoder, rearLeftEncoder, rearRightEncoder;
+  public RelativeEncoder frontLeftEncoder, frontRightEncoder, rearLeftEncoder, rearRightEncoder;
   AHRS navx;
 
   boolean fieldOriented = true;
@@ -43,6 +43,9 @@ public class DriveTrain extends SubsystemBase {
     rearLeftEncoder = rearLeftMotor.getEncoder();
     rearRightEncoder = rearRightMotor.getEncoder();
 
+    resetEncoders();
+
+    
     // Creating drive system
     mecanumDrive = new MecanumDrive(frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor);
     mecanumDrive.setSafetyEnabled(false);
@@ -80,6 +83,18 @@ public class DriveTrain extends SubsystemBase {
     frontRightEncoder.setPosition(0);
     rearLeftEncoder.setPosition(0);
     rearRightEncoder.setPosition(0);
+  }
+
+  public void convertEncoderUnits() {
+    frontLeftEncoder.setPositionConversionFactor(Constants.EncoderConstants.distancePerRevolution);
+    frontRightEncoder.setPositionConversionFactor(Constants.EncoderConstants.distancePerRevolution);
+    rearLeftEncoder.setPositionConversionFactor(Constants.EncoderConstants.distancePerRevolution);
+    rearRightEncoder.setPositionConversionFactor(Constants.EncoderConstants.distancePerRevolution);
+
+    frontLeftEncoder.setVelocityConversionFactor(Constants.EncoderConstants.velocityConversionFactor);
+    frontRightEncoder.setVelocityConversionFactor(Constants.EncoderConstants.velocityConversionFactor);
+    rearLeftEncoder.setVelocityConversionFactor(Constants.EncoderConstants.velocityConversionFactor);
+    rearRightEncoder.setVelocityConversionFactor(Constants.EncoderConstants.velocityConversionFactor);
   }
 
   public void resetDegree() {

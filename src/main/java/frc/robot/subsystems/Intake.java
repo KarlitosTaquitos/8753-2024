@@ -23,10 +23,10 @@ public class Intake extends SubsystemBase {
   CANSparkMax intakeMotor;
 
   final int inside = 0;
-  final int amp = -15;
+  final int amp = -16;
   final int floor = -43;
 
-  final double manualMovementMult = 0.1;
+  final double manualMovementMult = 0.2;
 
   /** Creates a new Intake. */
   public Intake() {
@@ -56,7 +56,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void outtake() {
-    intakeMotor.set(-.75);
+    intakeMotor.set(-1);
   }
 
   public void moveDown() {
