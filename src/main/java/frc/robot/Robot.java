@@ -67,6 +67,7 @@ public class Robot extends TimedRobot {
     }
 
     m_robotContainer.driveTrain.setToBrake();
+    m_robotContainer.driveTrain.setToFieldOriented(false);
   }
 
   /** This function is called periodically during autonomous. */
@@ -84,6 +85,7 @@ public class Robot extends TimedRobot {
     }
 
     m_robotContainer.driveTrain.setToCoast();
+    m_robotContainer.driveTrain.setToFieldOriented(true);
   }
 
   /** This function is called periodically during operator control. */

@@ -192,6 +192,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // TODO: Test and choose autos
-    return Autos.startRightOneNote(driveTrain, intake, shooter);
+    return Autos.startInMiddleThreeNoteRed(driveTrain, intake, shooter);
   }
 }

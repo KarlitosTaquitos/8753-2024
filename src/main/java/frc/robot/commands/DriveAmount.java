@@ -11,6 +11,7 @@ import frc.robot.subsystems.DriveTrain;
 public class DriveAmount extends Command {
   private DriveTrain driveTrain;
   private double forward, strafe, turn;
+  private double initialDegree;
 
   // If internal timer doesn't work, we run command with a .withTimeout
   private double timeToLive;
@@ -33,7 +34,13 @@ public class DriveAmount extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    /* 
+    if(turn == 0) {
+      initialDegree = driveTrain.getDegree();
+    }
+    */
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -44,6 +51,13 @@ public class DriveAmount extends Command {
     }
 
     driveTrain.drive(forward, strafe, turn);
+      /* 
+    if(turn == 0) {
+      if(initialDegree > driveTrain.getDegree()) {
+        
+      }
+    }
+    */
   }
 
   // Called once the command ends or is interrupted.

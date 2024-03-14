@@ -60,8 +60,16 @@ public class DriveTrain extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
+  public double getDegree() {
+    return navx.getRotation2d().getDegrees(); 
+  }
+
   public void toggleMode() {
     fieldOriented = !fieldOriented;
+  }
+
+  public void setToFieldOriented(boolean yes) {
+    fieldOriented = yes;
   }
 
   public void setToBrake() {
