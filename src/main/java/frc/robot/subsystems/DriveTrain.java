@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.Constants.OdometryConstants;
 
 import java.math.BigDecimal;
 
@@ -27,6 +28,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
+import edu.wpi.first.math.kinematics.MecanumDriveMotorVoltages;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
@@ -37,6 +39,7 @@ import edu.wpi.first.wpilibj.SPI;
 public class DriveTrain extends SubsystemBase {
   MecanumDrive mecanumDrive;
   RelativeEncoder fLEncoder, fREncoder, rLEncoder, rREncoder;
+
   CANSparkMax frontLeftMotor, frontRightMotor, rearLeftMotor, rearRightMotor;
 
   AHRS navx;
@@ -67,6 +70,10 @@ public class DriveTrain extends SubsystemBase {
     rearLeftMotor = new CANSparkMax(Constants.MotorControllerConstants.backLeft, MotorType.kBrushless);
     rearRightMotor = new CANSparkMax(Constants.MotorControllerConstants.backRight, MotorType.kBrushless);
     
+// Creating drive system
+    mecanumDrive = new MecanumDrive(frontLeftMotor::set, rearLeftMotor::set, frontRightMotor::set, rearRightMotor::set);
+    mecanumDrive.setSafetyEnabled(false);
+
     fLEncoder = frontLeftMotor.getEncoder();
     fREncoder = frontRightMotor.getEncoder();
     rLEncoder = rearLeftMotor.getEncoder();
@@ -76,61 +83,28 @@ public class DriveTrain extends SubsystemBase {
     fREncoder.setPositionConversionFactor(Constants.OdometryConstants.encoderDistancePerPulse);
     rLEncoder.setPositionConversionFactor(Constants.OdometryConstants.encoderDistancePerPulse);
     rREncoder.setPositionConversionFactor(Constants.OdometryConstants.encoderDistancePerPulse);
-
-    fLEncoder.setVelocityConversionFactor(Constants.OdometryConstants.encoderVelocityConversionFactor);
-    fREncoder.setVelocityConversionFactor(Constants.OdometryConstants.encoderVelocityConversionFactor);
-    rLEncoder.setVelocityConversionFactor(Constants.OdometryConstants.encoderVelocityConversionFactor);
-    rREncoder.setVelocityConversionFactor(Constants.OdometryConstants.encoderVelocityConversionFactor);
     
     resetEncoders();
 
     frontRightMotor.setInverted(true);
     rearRightMotor.setInverted(true);
 
-    // Creating drive system
-    mecanumDrive = new MecanumDrive(frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor);
-    mecanumDrive.setSafetyEnabled(false);
-
     // Gyroscope
     navx = new AHRS(SPI.Port.kMXP);
     navx.reset();
 
-    m_frontLeftLocation = Constants.OdometryConstants.frontLeftLocation;
-    m_frontRightLocation = Constants.OdometryConstants.frontRightLocation;
-    m_backLeftLocation = Constants.OdometryConstants.backLeftLocation;
-    m_backRightLocation = Constants.OdometryConstants.backRightLocation;
-
-    m_kinematics = new MecanumDriveKinematics(
-        m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
+    m_kinematics = OdometryConstants.mecanumDriveKinematics;
 
     m_odometry = new MecanumDriveOdometry(
         m_kinematics,
         getAngleRotation2d(),
-        new MecanumDriveWheelPositions(
-            fLEncoder.getPosition(), fREncoder.getPosition(),
-            rLEncoder.getPosition(), rREncoder.getPosition()),
+        new MecanumDriveWheelPositions(),
         startPose2d);
 
     SmartDashboard.putData("Field", m_field);
   }
 
-  public Rotation2d getAngleRotation2d() {
-    return navx.getRotation2d();
-  }
-
-  public MecanumDriveWheelPositions getWheelPositions() {
-    return new MecanumDriveWheelPositions(
-        fLEncoder.getPosition(), fREncoder.getPosition(),
-        rLEncoder.getPosition(), rREncoder.getPosition());
-  }
-
-  public MecanumDriveWheelSpeeds getWheelSpeeds() {
-    return new MecanumDriveWheelSpeeds(
-        fLEncoder.getVelocity(), fREncoder.getVelocity(),
-        rLEncoder.getVelocity(), rREncoder.getVelocity());
-  }
-
-  @Override
+   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     // Get my wheel positions
@@ -145,44 +119,41 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public void printPose(Pose2d robotPose) {
-    BigDecimal x = new BigDecimal(robotPose.getX());
-    x.setScale(3);
-    double X = x.doubleValue();
-    SmartDashboard.putNumber("X:", X);
+    SmartDashboard.putNumber("X:", robotPose.getX());
 
-    BigDecimal y = new BigDecimal(robotPose.getY());
-    y.setScale(3);
-    double Y = y.doubleValue();
-    SmartDashboard.putNumber("Y: ", Y);
+    SmartDashboard.putNumber("Y: ", robotPose.getY());
 
-    BigDecimal angle = new BigDecimal(MathUtil.angleModulus(robotPose.getRotation().getDegrees()));
-    angle.setScale(1);
-    double theta = angle.doubleValue();
-    SmartDashboard.putNumber("Heading: ", theta);
-    
-    /*
-     * String x = String.format("X: %.3f", robotPose.getX());
-     * String y = String.format("Y: %.3f", robotPose.getY());
-     * String angle = String.format("Angle: %.1f",
-     * MathUtil.angleModulus(robotPose.getRotation().getDegrees()));
-     * SmartDashboard.putString("Pose: ", x + "\n" + y + "\n" + angle);
-     */
+    SmartDashboard.putNumber("Heading: ", MathUtil.angleModulus(robotPose.getRotation().getDegrees()));
 
      m_field.setRobotPose(robotPose);
      SmartDashboard.putData("Field", m_field);
   }
 
-  public void resetPose() {
-    m_odometry.resetPosition(getAngleRotation2d(), getWheelPositions(), startPose2d);
+  public Pose2d getPose() {
+    return robotPose;
+  }
+
+  //@param pose t0 set odometry to
+  public void resetOdometry(Pose2d pose) {
+    m_odometry.resetPosition(getAngleRotation2d(), getWheelPositions(), pose);
   }
 
   public void toggleMode() {
     fieldOriented = !fieldOriented;
   }
 
-  public void resetDegree() {
-    navx.reset();
-    m_odometry.resetPosition(getAngleRotation2d(), getWheelPositions(), robotPose);
+  public void drive(double forward, double strafe, double turn) {
+    if (fieldOriented) {
+      driveFieldOriented(forward, strafe, turn);
+    } else
+      driveRobotOriented(forward, strafe, turn);
+  }
+
+  public void setDriveMotorControllersVolts(MecanumDriveMotorVoltages volts) {
+    frontLeftMotor.setVoltage(volts.frontLeftVoltage);
+    rearLeftMotor.setVoltage(volts.rearLeftVoltage);
+    frontRightMotor.setVoltage(volts.frontRightVoltage);
+    rearRightMotor.setVoltage(volts.rearRightVoltage);
   }
 
   public void resetEncoders() {
@@ -192,11 +163,49 @@ public class DriveTrain extends SubsystemBase {
     rREncoder.setPosition(0);
   }
 
-  public void drive(double forward, double strafe, double turn) {
-    if (fieldOriented) {
-      driveFieldOriented(forward, strafe, turn);
-    } else
-      driveRobotOriented(forward, strafe, turn);
+  public RelativeEncoder getfLEncoder() {
+    return fLEncoder;
+  }
+
+  public RelativeEncoder getfREncoder() {
+    return fREncoder;
+  }
+
+  public RelativeEncoder getrLEncoder() {
+    return rLEncoder;
+  }
+
+  public RelativeEncoder getrREncoder() {
+    return rREncoder;
+  }
+
+  public Rotation2d getAngleRotation2d() {
+    return navx.getRotation2d();
+  }
+
+  public MecanumDriveWheelSpeeds getWheelSpeeds() {
+    return new MecanumDriveWheelSpeeds(
+        fLEncoder.getVelocity(), fREncoder.getVelocity(),
+        rLEncoder.getVelocity(), rREncoder.getVelocity());
+  }
+
+  public MecanumDriveWheelPositions getWheelPositions() {
+    return new MecanumDriveWheelPositions(
+        fLEncoder.getPosition(), fREncoder.getPosition(),
+        rLEncoder.getPosition(), rREncoder.getPosition());
+  }
+
+  //set max power to set Drivetrain
+  public void setMaxOutput(double maxOutpu) {
+    mecanumDrive.setMaxOutput(maxOutpu);
+  }
+
+  public void resetDegree() {
+    navx.reset();
+  }
+
+  public double getTurnRate() {
+    return navx.getRate();
   }
 
   public void driveFieldOriented(double forward, double strafe, double turn) {

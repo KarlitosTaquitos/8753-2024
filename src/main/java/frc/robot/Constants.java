@@ -4,7 +4,10 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
+import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -48,15 +51,17 @@ public final class Constants {
     public static final Translation2d frontRightLocation = new Translation2d(0.2604, -0.2604);
     public static final Translation2d backLeftLocation = new Translation2d(-0.2604, 0.2604);
     public static final Translation2d backRightLocation = new Translation2d(-0.2604, -0.2604);
+    public static final MecanumDriveKinematics  mecanumDriveKinematics = new MecanumDriveKinematics(frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
 
     public static final double wheelRadius = .1016;
     public static final double wheelCircumference = wheelRadius * 2 * Math.PI;
     public static final double chassisGearRatio = 12.5;
     public static final double encoderDistancePerPulse = wheelCircumference / chassisGearRatio;
+    public static final double setVelocityConversionFactor = encoderDistancePerPulse * 60;
 
-    public static final double ksVolts = 0;
-    public static final double kvVoltSecondsPerMeter = 0;
-    public static final double kaVoltSecondsSquaredPerMeter = 0;
+    //subject to change
+    public static final SimpleMotorFeedforward kFeedforward =
+        new SimpleMotorFeedforward(1, 0.8, 0.15);
 
     public static final double kPDriveVel = 0;
   }
