@@ -18,13 +18,17 @@ import edu.wpi.first.wpilibj.SPI;
 
 public class DriveTrain extends SubsystemBase {
   MecanumDrive mecanumDrive;
-
+  
   public CANSparkMax frontLeftMotor, frontRightMotor, rearLeftMotor, rearRightMotor;
   
   public RelativeEncoder frontLeftEncoder, frontRightEncoder, rearLeftEncoder, rearRightEncoder;
   AHRS navx;
 
   boolean fieldOriented = true;
+
+  double appliedTurn = 0;
+
+  double appliedForward = 0;
 
   /** Creates a new DriveTrain. */
   public DriveTrain() {
@@ -60,16 +64,16 @@ public class DriveTrain extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  public double getDegree() {
-    return navx.getRotation2d().getDegrees(); 
-  }
-
   public void toggleMode() {
     fieldOriented = !fieldOriented;
   }
 
   public void setToFieldOriented(boolean yes) {
-    fieldOriented = yes;
+    if(yes) {
+      fieldOriented = true;
+    } else {
+      fieldOriented = false;
+    }
   }
 
   public void setToBrake() {
@@ -109,20 +113,52 @@ public class DriveTrain extends SubsystemBase {
     navx.reset();
   }
 
-  public void drive(double forward, double strafe, double turn) {
-    // dead zone
+  public void drive(double forward, double strafe, double turn, boolean leftOverride, boolean rightOverride, boolean forwardOverride, boolean stop, boolean teleOp) {
+    // dead zone, doesn't work
     if (forward < 0.05 && forward > -0.05)
       forward = 0;
     if (strafe < 0.05 && strafe > -0.05)
       strafe = 0;
     if (turn < 0.05 && turn > -0.05)
       turn = 0;
+    
+    boolean override = leftOverride || rightOverride || forwardOverride;
+    
+    if(leftOverride || rightOverride) {
+      if (leftOverride) {
+        appliedTurn = -.2;
+      }
+      if (rightOverride) {
+        appliedTurn = .2;
+      }
+    } else {
+      appliedTurn = turn;
+    }
 
+    if(forwardOverride) {
+      appliedForward = .2;
+    } else {
+      appliedForward = forward;
+    }
 
-    if (fieldOriented) {
-      driveFieldOriented(forward, strafe, turn);
-    } else
-      driveRobotOriented(forward, strafe, turn);
+    
+    if(!stop) {
+      if (fieldOriented && !override) {
+          driveFieldOriented(appliedForward, strafe, appliedTurn);
+        } else {
+          driveRobotOriented(appliedForward, strafe, appliedTurn);
+        }
+        if(teleOp) {
+          setToCoast();
+        }
+      } else {
+        if (fieldOriented) {
+          driveFieldOriented(0, 0, 0);
+        } else {
+          driveRobotOriented(0, 0, 0);
+        }
+        setToBrake();
+      }
   }
 
   public void driveFieldOriented(double forward, double strafe, double turn) {

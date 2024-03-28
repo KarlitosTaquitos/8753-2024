@@ -70,7 +70,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void moveToAmp() {
-    movementController.setReference(amp, ControlType.kPosition);
+    movementController.setReference((double)amp - .5, ControlType.kPosition);
     targetPosition = amp;
   }
 

@@ -11,7 +11,6 @@ import frc.robot.subsystems.DriveTrain;
 public class DriveAmount extends Command {
   private DriveTrain driveTrain;
   private double forward, strafe, turn;
-  private double initialDegree;
 
   // If internal timer doesn't work, we run command with a .withTimeout
   private double timeToLive;
@@ -50,7 +49,7 @@ public class DriveAmount extends Command {
       timer.restart();
     }
 
-    driveTrain.drive(forward, strafe, turn);
+    driveTrain.drive(forward, strafe, turn, false, false, false, false, false);
       /* 
     if(turn == 0) {
       if(initialDegree > driveTrain.getDegree()) {
@@ -63,7 +62,7 @@ public class DriveAmount extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    driveTrain.drive(0, 0, 0);
+    driveTrain.drive(0, 0, 0, false, false, false, false, false);
   }
 
   // Returns true when the command should end.

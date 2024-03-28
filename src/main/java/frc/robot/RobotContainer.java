@@ -20,11 +20,14 @@ import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
@@ -62,6 +65,7 @@ public class RobotContainer {
   private final JoystickButton driverStart = new JoystickButton(driver, DriverConstants.start);
   private final JoystickButton driverBack = new JoystickButton(driver, DriverConstants.back);
   private final JoystickButton driverRB = new JoystickButton(driver, OperatorConstants.rB);
+  
 
   // operator
   private final JoystickButton operatorA = new JoystickButton(operator, OperatorConstants.a);
@@ -70,6 +74,20 @@ public class RobotContainer {
   private final JoystickButton operatorLB = new JoystickButton(operator, OperatorConstants.lB);
   private final JoystickButton operatorRB = new JoystickButton(operator, OperatorConstants.rB);
   private final JoystickButton operatorStart = new JoystickButton(operator, OperatorConstants.start);
+  private final POVButton leftDPAD = new POVButton(operator, 270);
+  private final POVButton rightDPAD = new POVButton(operator, 90);
+  private final POVButton upDPAD = new POVButton(operator, 0);
+
+
+  private final Command startInMiddleTwoNote = Autos.startInMiddleTwoNote(driveTrain, intake, shooter);
+  private final Command startInMiddleThreeNoteBlueLeft = Autos.startInMiddleThreeNoteBlueLeft(driveTrain, intake, shooter);
+  private final Command startInMiddleThreeNoteRedRight = Autos.startInMiddleThreeNoteRedRight(driveTrain, intake, shooter);
+  private final Command startInMiddleThreeNoteBlueRight = Autos.startInMiddleThreeNoteBlueRight(driveTrain, intake, shooter);
+  private final Command startInMiddleThreeNoteRedLeft = Autos.startInMiddleThreeNoteRedLeft(driveTrain, intake, shooter);
+  private final Command startSourceSideOneNoteTaxi = Autos.startSourceSideOneNoteTaxi(driveTrain, intake, shooter);
+
+  // A chooser for autonomous commands
+  SendableChooser<Command> m_chooser = new SendableChooser<>();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -77,6 +95,14 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
+
+    m_chooser.setDefaultOption("Middle 2 Note", startInMiddleTwoNote);
+    m_chooser.addOption("Blue Left 3 Note", startInMiddleThreeNoteBlueLeft);
+    m_chooser.addOption("Red Right 3 Note", startInMiddleThreeNoteRedRight);
+    m_chooser.addOption("Blue Right 3 Note", startInMiddleThreeNoteBlueRight);
+    m_chooser.addOption("Red Left 3 Note", startInMiddleThreeNoteRedLeft);
+    m_chooser.addOption("Shoot and Taxi", startSourceSideOneNoteTaxi);
+    SmartDashboard.putData(m_chooser);
   }
 
   /**
@@ -158,21 +184,27 @@ public class RobotContainer {
     driverBack.onTrue(resetdegree);
 
     // Brake
+    /* 
     driverRB.onTrue(new InstantCommand(() -> {
-      driveTrain.drive(0, 0, 0);
+      driveTrain.drive(0, 0, 0, false, false);
       driveTrain.setToBrake();
     }, driveTrain))
         .onFalse(new InstantCommand(() -> {
           driveTrain.setToCoast();
         }, driveTrain));
-
+*/
     // DriveTrain Default (driver sticks)
     driveTrain.setDefaultCommand(
         new RunCommand(() -> {
           driveTrain.drive(
               driver.getRawAxis(DriverConstants.leftY) * DriverConstants.driveMult,
               driver.getRawAxis(DriverConstants.leftX) * DriverConstants.driveMult,
-              driver.getRawAxis(DriverConstants.rightX) * DriverConstants.driveMult * .75);
+              driver.getRawAxis(DriverConstants.rightX) * DriverConstants.driveMult * .75,
+              leftDPAD.getAsBoolean(),
+              rightDPAD.getAsBoolean(),
+              upDPAD.getAsBoolean(),
+              driverRB.getAsBoolean(),
+              true);
         }, driveTrain));
 
     operatorStart.onTrue(toggleClimberLimit);
@@ -192,6 +224,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // TODO: Test and choose autos
-    return Autos.startInMiddleThreeNoteRed(driveTrain, intake, shooter);
+    return m_chooser.getSelected();
   }
 }

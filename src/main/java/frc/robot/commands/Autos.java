@@ -19,117 +19,142 @@ public final class Autos {
   // return Commands.sequence(subsystem.exampleMethodCommand(), new
   // ExampleCommand(subsystem));
   // }
+  // Used for all note shooting. Potential tweaks
   public static Command shootNote(Intake i, Shooter s) {
     return new SequentialCommandGroup(
-      new RunCommand(() -> s.shoot(), s).withTimeout(.25),
-      new RunCommand(() -> i.outtake(), i).withTimeout(.75),  
-      new ParallelCommandGroup(
-        new RunCommand(() -> i.stopIntake(), i).withTimeout(.25),
-        new RunCommand(() -> s.stop(), s).withTimeout(.25)
-      ));
-  }
-
-  public static Command intakeProcedure(DriveTrain dt, Intake i) {
-    return new SequentialCommandGroup(
+        new RunCommand(() -> s.shoot(), s).withTimeout(.25),
+        new RunCommand(() -> i.outtake(), i).withTimeout(.75),
         new ParallelCommandGroup(
-            new DriveAmount(.15, 0, 0, dt, 1),
-            new RunCommand(() -> i.intake(), i).withTimeout(1)),
-        new ParallelCommandGroup(
-            new DriveAmount(-.15, 0, 0, dt, 1),
-            new RunCommand(() -> i.intake(), i).withTimeout(1)));
+            new RunCommand(() -> i.stopIntake(), i).withTimeout(.25),
+            new RunCommand(() -> s.stop(), s).withTimeout(.25)));
   }
 
-  public static Command testAutoDrive(DriveTrain dt) {
-    return new DriveAmount(-0.3, -.2, -.1, dt, 1.5);
-
-  }
-
-  //Start Pose in front of amp
+  // Used in every auto. First step
   public static Command startInMiddleTwoNote(DriveTrain dt, Intake i, Shooter s) {
     return new SequentialCommandGroup(
-      shootNote(i, s),
-      new ParallelCommandGroup(
-        new DriveAmount(-.3, 0, 0, dt, 1.5),
-        new SequentialCommandGroup(
-          new MoveIntakeToFloor(i).withTimeout(1),
-          new RunCommand(() -> i.intake(), i).withTimeout(1)
-        )),
-      new ParallelCommandGroup(
-        new DriveAmount(.3, 0, 0, dt, 1.5),
-        new SequentialCommandGroup(
-          new RunCommand(() -> i.stopIntake(), i).withTimeout(1),
-          new MoveIntakeInside(i).withTimeout(1)
-        )),
-      shootNote(i, s)
-    );
+        shootNote(i, s),
+        new ParallelCommandGroup(
+            new DriveAmount(-.3, 0, 0, dt, 1.5),
+            new SequentialCommandGroup(
+                new MoveIntakeToFloor(i).withTimeout(1),
+                new RunCommand(() -> i.intake(), i).withTimeout(1))),
+        new ParallelCommandGroup(
+            new DriveAmount(.3, 0, 0, dt, 1.5),
+            new SequentialCommandGroup(
+                new RunCommand(() -> i.stopIntake(), i).withTimeout(1),
+                new MoveIntakeInside(i).withTimeout(1))),
+        shootNote(i, s));
   }
 
-   public static Command startInMiddleLeftNote(DriveTrain dt, Intake i, Shooter s) {
+  //Used in amp side on blue.
+  public static Command startInMiddleLeftNote(DriveTrain dt, Intake i, Shooter s) {
     return new SequentialCommandGroup(
-      new ParallelCommandGroup(
-        new SequentialCommandGroup(
-          new DriveAmount(-.4, -.4, -.35, dt, .75),
-          new DriveAmount(-.4, 0, 0, dt, .75)),
-        new SequentialCommandGroup(
-          new MoveIntakeToFloor(i).withTimeout(1),
-          new RunCommand(() -> i.intake(), i).withTimeout(1.75)
-        )),
-      new ParallelCommandGroup(
-        new DriveAmount(.3, .3, .1, dt, 1.5),
-        new SequentialCommandGroup(
-          new RunCommand(() -> i.stopIntake(), i).withTimeout(.5),
-          new MoveIntakeInside(i).withTimeout(1)
-        )),
-      new DriveAmount(.2, 0, 0, dt, 1),
-      shootNote(i, s)
-    );
+        new ParallelCommandGroup(
+            new SequentialCommandGroup(
+                new DriveAmount(-.4, -.4, -.35, dt, .75),
+                new DriveAmount(-.4, 0, 0, dt, .75)),
+            new SequentialCommandGroup(
+                new MoveIntakeToFloor(i).withTimeout(1),
+                new RunCommand(() -> i.intake(), i).withTimeout(1.75))),
+        new ParallelCommandGroup(
+            new DriveAmount(.34, .3, .1, dt, 1.5),
+            new SequentialCommandGroup(
+                new RunCommand(() -> i.stopIntake(), i).withTimeout(.5),
+                new MoveIntakeInside(i).withTimeout(1))),
+        new DriveAmount(.2, 0, 0, dt, 1),
+        shootNote(i, s));
   }
 
+  //TODO: Change this hoe. Reduce time
+  //Used in source side on red
+  public static Command startInMiddleLeftNoteShort(DriveTrain dt, Intake i, Shooter s) {
+    return new SequentialCommandGroup(
+        new ParallelCommandGroup(
+            new SequentialCommandGroup(
+                new DriveAmount(-.4, -.4, -.35, dt, .75),
+                new DriveAmount(-.4, 0, 0, dt, .25)),
+            new SequentialCommandGroup(
+                new MoveIntakeToFloor(i).withTimeout(1),
+                new RunCommand(() -> i.intake(), i).withTimeout(1.75))),
+        new ParallelCommandGroup(
+            new DriveAmount(.34, .3, .1, dt, 1.5),
+            new SequentialCommandGroup(
+                new RunCommand(() -> i.stopIntake(), i).withTimeout(.5),
+                new MoveIntakeInside(i).withTimeout(1))),
+        new DriveAmount(.2, 0, 0, dt, .5),
+        shootNote(i, s));
+  }
+
+  //Used in amp side on red.
   public static Command startInMiddleRightNote(DriveTrain dt, Intake i, Shooter s) {
     return new SequentialCommandGroup(
-      new ParallelCommandGroup(
-        new SequentialCommandGroup(
-          new DriveAmount(-.4, .4, .35, dt, .75),
-          new DriveAmount(-.4, 0, 0, dt, .75)),
-        new SequentialCommandGroup(
-          new MoveIntakeToFloor(i).withTimeout(1),
-          new RunCommand(() -> i.intake(), i).withTimeout(1.75)
-        )),
-      new ParallelCommandGroup(
-        new DriveAmount(.3, -.3, -.1, dt, 1.5),
-        new SequentialCommandGroup(
-          new RunCommand(() -> i.stopIntake(), i).withTimeout(.5),
-          new MoveIntakeInside(i).withTimeout(1)
-        )),
-      new DriveAmount(.2, 0, 0, dt, 1),
-      shootNote(i, s)
-    );
-  }
-  
-  public static Command startInMiddleThreeNoteBlue(DriveTrain dt, Intake i, Shooter s) {
-    return new SequentialCommandGroup(startInMiddleTwoNote(dt, i, s),
-    startInMiddleLeftNote(dt, i, s));
+        new ParallelCommandGroup(
+            new SequentialCommandGroup(
+                new DriveAmount(-.4, .4, .35, dt, .75),
+                new DriveAmount(-.4, 0, 0, dt, .75)),
+            new SequentialCommandGroup(
+                new MoveIntakeToFloor(i).withTimeout(1),
+                new RunCommand(() -> i.intake(), i).withTimeout(1.75))),
+        new ParallelCommandGroup(
+            new DriveAmount(.3, -.3, -.09, dt, 1.5),
+            new SequentialCommandGroup(
+                new RunCommand(() -> i.stopIntake(), i).withTimeout(.5),
+                new MoveIntakeInside(i).withTimeout(1))),
+        new DriveAmount(.2, 0, 0, dt, 1),
+        shootNote(i, s));
   }
 
-  public static Command startInMiddleThreeNoteRed(DriveTrain dt, Intake i, Shooter s) {
-    return new SequentialCommandGroup(startInMiddleTwoNote(dt, i, s),
-    startInMiddleRightNote(dt, i, s));
-  }
-  //Start right of amp. Should work on both sides
-  public static Command startRightTwoOne(DriveTrain dt, Intake i, Shooter s) {
+  //TODO: Change this hoe. Reduce time
+  //Used in source side on blue
+  public static Command startInMiddleRightNoteShort(DriveTrain dt, Intake i, Shooter s) {
     return new SequentialCommandGroup(
-      new DriveAmount(0, .2, 0, dt, 2).withTimeout(2),
-      shootNote(i, s),
-      new DriveAmount(0, -.2, 0, dt, 2).withTimeout(2));
+        new ParallelCommandGroup(
+            new SequentialCommandGroup(
+                new DriveAmount(-.4, .4, .35, dt, .75),
+                new DriveAmount(-.4, 0, 0, dt, .25)),
+            new SequentialCommandGroup(
+                new MoveIntakeToFloor(i).withTimeout(1),
+                new RunCommand(() -> i.intake(), i).withTimeout(1.75))),
+        new ParallelCommandGroup(
+            new DriveAmount(.3, -.3, -.09, dt, 1.5),
+            new SequentialCommandGroup(
+                new RunCommand(() -> i.stopIntake(), i).withTimeout(.5),
+                new MoveIntakeInside(i).withTimeout(1))),
+        new DriveAmount(.2, 0, 0, dt, .5),
+        shootNote(i, s));
   }
 
-  //Start Left of amp. Both sides
-  public static Command startRightOneNote(DriveTrain dt, Intake i, Shooter s) {
-    return new SequentialCommandGroup(
-      shootNote(i, s),
-      new DriveAmount(-.3, 0, 0, dt, 4).withTimeout(6));
+
+  //Amp side
+  public static Command startInMiddleThreeNoteBlueLeft(DriveTrain dt, Intake i, Shooter s) {
+    return new SequentialCommandGroup(startInMiddleTwoNote(dt, i, s),
+        startInMiddleLeftNote(dt, i, s));
   }
-  
+
+  //Amp side
+  public static Command startInMiddleThreeNoteRedRight(DriveTrain dt, Intake i, Shooter s) {
+    return new SequentialCommandGroup(startInMiddleTwoNote(dt, i, s),
+        startInMiddleRightNote(dt, i, s));
+  }
+
+  //TODO: Test this
+  public static Command startInMiddleThreeNoteRedLeft(DriveTrain dt, Intake i, Shooter s) {
+    return new SequentialCommandGroup(startInMiddleTwoNote(dt, i, s),
+    startInMiddleLeftNoteShort(dt, i, s));
+  }
+
+  //TODO: Test this
+  public static Command startInMiddleThreeNoteBlueRight(DriveTrain dt, Intake i, Shooter s) {
+    return new SequentialCommandGroup(startInMiddleTwoNote(dt, i, s),
+    startInMiddleRightNoteShort(dt, i, s));
+  }
+
+  // Start Left of amp. Both sides
+  public static Command startSourceSideOneNoteTaxi(DriveTrain dt, Intake i, Shooter s) {
+    return new SequentialCommandGroup(
+        shootNote(i, s),
+        new DriveAmount(-.3, 0, 0, dt, 4).withTimeout(6));
+  }
 
   private Autos() {
     throw new UnsupportedOperationException("This is a utility class!");
