@@ -22,7 +22,7 @@ public final class Autos {
   // Used for all note shooting. Potential tweaks
   public static Command shootNote(Intake i, Shooter s) {
     return new SequentialCommandGroup(
-        new RunCommand(() -> s.shoot(), s).withTimeout(.25),
+        new RunCommand(() -> s.shootSpeaker(), s).withTimeout(.25),
         new RunCommand(() -> i.outtake(), i).withTimeout(.75),
         new ParallelCommandGroup(
             new RunCommand(() -> i.stopIntake(), i).withTimeout(.25),

@@ -15,10 +15,10 @@ import frc.robot.Constants.MotorControllerConstants;
 public class Climbers extends SubsystemBase {
   public static class Positions {
     public static final int lBottom = -2;
-    public static final int lTop = 105;
+    public static final int lTop = 195;
 
     public static final int rBottom = 2;
-    public static final int rTop = -105;
+    public static final int rTop = -195;
   }
 
   private CANSparkMax leftClimber = new CANSparkMax(MotorControllerConstants.lClimber, MotorType.kBrushless);

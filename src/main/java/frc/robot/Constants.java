@@ -31,6 +31,7 @@ public final class Constants {
     public static final int x = 3;
     public static final int y = 4;
     public static final int lB = 5;
+    public static final int rB = 6;
 
     public static final int start = 8;
     public static final int back = 7;
@@ -62,8 +63,9 @@ public final class Constants {
     public static final int lClimber = 9;
     public static final int rClimber = 10;
 
-    public static final int lShooter = 16;
-    public static final int rShooter = 17;
+    public static final int topShooter = 16;
+    public static final int middleShooter = 17;
+    public static final int bottomShooter = 18;
   }
 
   public static class SensorConstants {

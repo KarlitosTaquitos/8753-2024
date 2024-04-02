@@ -23,6 +23,7 @@ public class Intake extends SubsystemBase {
   CANSparkMax intakeMotor;
 
   final int inside = 0;
+  final int shooter = -4;
   final int amp = -16;
   final int floor = -43;
 
@@ -70,8 +71,12 @@ public class Intake extends SubsystemBase {
   }
 
   public void moveToAmp() {
-    movementController.setReference((double)amp - .5, ControlType.kPosition);
+    movementController.setReference(amp - .5, ControlType.kPosition);
     targetPosition = amp;
+  }
+
+  public void moveToShotoer() {
+    movementController.setReference(shooter, ControlType.kPosition);
   }
 
   public void enablePID() {

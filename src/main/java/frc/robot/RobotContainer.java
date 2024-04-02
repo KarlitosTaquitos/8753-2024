@@ -10,6 +10,7 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.MoveIntakeInside;
 import frc.robot.commands.MoveIntakeToAmp;
 import frc.robot.commands.MoveIntakeToFloor;
+import frc.robot.commands.MoveIntakeToShooter;
 import frc.robot.commands.ResetDegree;
 import frc.robot.commands.SetToBrake;
 import frc.robot.commands.SetToCoast;
@@ -55,6 +56,7 @@ public class RobotContainer {
 
   private final MoveIntakeToFloor moveIntakeToFloor = new MoveIntakeToFloor(intake);
   private final MoveIntakeInside moveIntakeInside = new MoveIntakeInside(intake);
+  private final MoveIntakeToShooter moveIntakeToShooter = new MoveIntakeToShooter(intake);
   private final MoveIntakeToAmp moveIntakeToAmp = new MoveIntakeToAmp(intake);
 
   private final ToggleClimberLimit toggleClimberLimit = new ToggleClimberLimit(climbers);
@@ -64,12 +66,13 @@ public class RobotContainer {
   private final JoystickButton driverLB = new JoystickButton(driver, DriverConstants.lB);
   private final JoystickButton driverStart = new JoystickButton(driver, DriverConstants.start);
   private final JoystickButton driverBack = new JoystickButton(driver, DriverConstants.back);
-  private final JoystickButton driverRB = new JoystickButton(driver, OperatorConstants.rB);
-  
+  private final JoystickButton driverRB = new JoystickButton(driver, DriverConstants.rB);
+  private final JoystickButton driverA = new JoystickButton(driver, DriverConstants.a);
 
   // operator
   private final JoystickButton operatorA = new JoystickButton(operator, OperatorConstants.a);
   private final JoystickButton operatorB = new JoystickButton(operator, OperatorConstants.b);
+  private final JoystickButton operatorX = new JoystickButton(operator, OperatorConstants.x);
   private final JoystickButton operatorY = new JoystickButton(operator, OperatorConstants.y);
   private final JoystickButton operatorLB = new JoystickButton(operator, OperatorConstants.lB);
   private final JoystickButton operatorRB = new JoystickButton(operator, OperatorConstants.rB);
@@ -78,12 +81,15 @@ public class RobotContainer {
   private final POVButton rightDPAD = new POVButton(operator, 90);
   private final POVButton upDPAD = new POVButton(operator, 0);
 
-
   private final Command startInMiddleTwoNote = Autos.startInMiddleTwoNote(driveTrain, intake, shooter);
-  private final Command startInMiddleThreeNoteBlueLeft = Autos.startInMiddleThreeNoteBlueLeft(driveTrain, intake, shooter);
-  private final Command startInMiddleThreeNoteRedRight = Autos.startInMiddleThreeNoteRedRight(driveTrain, intake, shooter);
-  private final Command startInMiddleThreeNoteBlueRight = Autos.startInMiddleThreeNoteBlueRight(driveTrain, intake, shooter);
-  private final Command startInMiddleThreeNoteRedLeft = Autos.startInMiddleThreeNoteRedLeft(driveTrain, intake, shooter);
+  private final Command startInMiddleThreeNoteBlueLeft = Autos.startInMiddleThreeNoteBlueLeft(driveTrain, intake,
+      shooter);
+  private final Command startInMiddleThreeNoteRedRight = Autos.startInMiddleThreeNoteRedRight(driveTrain, intake,
+      shooter);
+  private final Command startInMiddleThreeNoteBlueRight = Autos.startInMiddleThreeNoteBlueRight(driveTrain, intake,
+      shooter);
+  private final Command startInMiddleThreeNoteRedLeft = Autos.startInMiddleThreeNoteRedLeft(driveTrain, intake,
+      shooter);
   private final Command startSourceSideOneNoteTaxi = Autos.startSourceSideOneNoteTaxi(driveTrain, intake, shooter);
 
   // A chooser for autonomous commands
@@ -131,6 +137,7 @@ public class RobotContainer {
 
     operatorA.onTrue(moveIntakeToFloor);
     operatorB.onTrue(moveIntakeInside);
+    operatorX.onTrue(moveIntakeToShooter);
     operatorY.onTrue(moveIntakeToAmp);
 
     { // Intake in
@@ -163,11 +170,11 @@ public class RobotContainer {
           intake.moveAtSpeed(operator.getRightTriggerAxis() - operator.getLeftTriggerAxis());
         }, intake));
 
-    { // Shoot
+    { // Shoot to Speaker
       driverLB
           .onTrue(
               new RunCommand(() -> {
-                shooter.shoot();
+                shooter.shootSpeaker();
                 operator.setRumble(RumbleType.kBothRumble, 0.5);
               }, shooter))
           .onFalse(
@@ -177,6 +184,18 @@ public class RobotContainer {
               }, shooter));
     }
 
+    { // Shoot through Robot
+      driverA
+          .onTrue(new RunCommand(() -> {
+            shooter.shootThrough();
+            operator.setRumble(RumbleType.kBothRumble, 0.5);
+          }, shooter))
+          .onFalse(new InstantCommand(() -> {
+            shooter.stop();
+            operator.setRumble(RumbleType.kBothRumble, 0);
+          }, shooter));
+    }
+
     // Toggle Driving Mode
     driverStart.onTrue(toggledriveMode);
 
@@ -184,15 +203,15 @@ public class RobotContainer {
     driverBack.onTrue(resetdegree);
 
     // Brake
-    /* 
-    driverRB.onTrue(new InstantCommand(() -> {
-      driveTrain.drive(0, 0, 0, false, false);
-      driveTrain.setToBrake();
-    }, driveTrain))
-        .onFalse(new InstantCommand(() -> {
-          driveTrain.setToCoast();
-        }, driveTrain));
-*/
+    /*
+     * driverRB.onTrue(new InstantCommand(() -> {
+     * driveTrain.drive(0, 0, 0, false, false);
+     * driveTrain.setToBrake();
+     * }, driveTrain))
+     * .onFalse(new InstantCommand(() -> {
+     * driveTrain.setToCoast();
+     * }, driveTrain));
+     */
     // DriveTrain Default (driver sticks)
     driveTrain.setDefaultCommand(
         new RunCommand(() -> {
