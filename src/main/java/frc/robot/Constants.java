@@ -66,7 +66,10 @@ public final class Constants {
     public static final double wheelCircumference = wheelRadius * 2 * Math.PI;
     public static final double chassisGearRatio = 12.5;
     public static final double encoderDistancePerPulse = wheelCircumference / chassisGearRatio;
-    public static final double setVelocityConversionFactor = encoderDistancePerPulse * 60;
+    public static final double encoderVelocityConversionFactor = encoderDistancePerPulse * 60;
+    public static final double ksVolts = 0;
+    public static final double kvVoltSecondsPerMeter = 0;
+    public static final double kaVoltSecondsSquaredPerMeter = 0;
 
     public static final double kPDriveVel = 0;
   }
