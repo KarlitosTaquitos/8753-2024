@@ -43,6 +43,16 @@ public class Shooter extends SubsystemBase {
     middleShooter.setVoltage(12);
   }
 
+  public void shootOver(){
+    topShooter.setVoltage(-10);
+    middleShooter.setVoltage(10);
+  }
+
+  public void shootAmp() {
+    topShooter.setVoltage(-1.7);
+    middleShooter.setVoltage(3);
+  }
+
   public void shootThrough() {
     middleShooter.setVoltage(-12);
     bottomShooter.setVoltage(12);
@@ -52,6 +62,10 @@ public class Shooter extends SubsystemBase {
     topShooter.setVoltage(0);
     middleShooter.setVoltage(0);
     bottomShooter.setVoltage(0);
+  }
+
+  public double getShooterVelocity() {
+    return rShooterEncoder.getVelocity();
   }
 
   @Override

@@ -4,6 +4,17 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.DriverConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
@@ -12,24 +23,14 @@ import frc.robot.commands.MoveIntakeToAmp;
 import frc.robot.commands.MoveIntakeToFloor;
 import frc.robot.commands.MoveIntakeToShooter;
 import frc.robot.commands.ResetDegree;
-import frc.robot.commands.SetToBrake;
-import frc.robot.commands.SetToCoast;
+import frc.robot.commands.ResetIntakePosition;
 import frc.robot.commands.ToggleClimberLimit;
 import frc.robot.commands.ToggleDrivingMode;
 import frc.robot.subsystems.Climbers;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.Shooter;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -46,6 +47,7 @@ public class RobotContainer {
   private final Intake intake = new Intake();
   private final Shooter shooter = new Shooter();
   private final Climbers climbers = new Climbers();
+  private final LEDs lights = new LEDs();
 
   private final XboxController driver = new XboxController(DriverConstants.controllerPort);
   private final XboxController operator = new XboxController(OperatorConstants.controllerPort);
@@ -58,6 +60,8 @@ public class RobotContainer {
   private final MoveIntakeInside moveIntakeInside = new MoveIntakeInside(intake);
   private final MoveIntakeToShooter moveIntakeToShooter = new MoveIntakeToShooter(intake);
   private final MoveIntakeToAmp moveIntakeToAmp = new MoveIntakeToAmp(intake);
+  private final ResetIntakePosition resetIntakePosition = new ResetIntakePosition(intake);
+  private final Command shootNote = Autos.shootNote(intake, shooter);
 
   private final ToggleClimberLimit toggleClimberLimit = new ToggleClimberLimit(climbers);
 
@@ -68,6 +72,9 @@ public class RobotContainer {
   private final JoystickButton driverBack = new JoystickButton(driver, DriverConstants.back);
   private final JoystickButton driverRB = new JoystickButton(driver, DriverConstants.rB);
   private final JoystickButton driverA = new JoystickButton(driver, DriverConstants.a);
+  private final JoystickButton driverY = new JoystickButton(driver, DriverConstants.y);
+  private final POVButton driverUpDPAD = new POVButton(driver, 0);
+  private final JoystickButton driverX = new JoystickButton(driver, DriverConstants.x);
 
   // operator
   private final JoystickButton operatorA = new JoystickButton(operator, OperatorConstants.a);
@@ -77,6 +84,7 @@ public class RobotContainer {
   private final JoystickButton operatorLB = new JoystickButton(operator, OperatorConstants.lB);
   private final JoystickButton operatorRB = new JoystickButton(operator, OperatorConstants.rB);
   private final JoystickButton operatorStart = new JoystickButton(operator, OperatorConstants.start);
+  private final JoystickButton operatorBack = new JoystickButton(operator, OperatorConstants.back);
   private final POVButton leftDPAD = new POVButton(operator, 270);
   private final POVButton rightDPAD = new POVButton(operator, 90);
   private final POVButton upDPAD = new POVButton(operator, 0);
@@ -91,6 +99,7 @@ public class RobotContainer {
   private final Command startInMiddleThreeNoteRedLeft = Autos.startInMiddleThreeNoteRedLeft(driveTrain, intake,
       shooter);
   private final Command startSourceSideOneNoteTaxi = Autos.startSourceSideOneNoteTaxi(driveTrain, intake, shooter);
+  private final Command startShootNote = Autos.shootNote(intake, shooter);
 
   // A chooser for autonomous commands
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -108,6 +117,7 @@ public class RobotContainer {
     m_chooser.addOption("Blue Right 3 Note", startInMiddleThreeNoteBlueRight);
     m_chooser.addOption("Red Left 3 Note", startInMiddleThreeNoteRedLeft);
     m_chooser.addOption("Shoot and Taxi", startSourceSideOneNoteTaxi);
+    m_chooser.addOption("Shoot and Stay", startShootNote);
     SmartDashboard.putData(m_chooser);
   }
 
@@ -136,9 +146,19 @@ public class RobotContainer {
     // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
 
     operatorA.onTrue(moveIntakeToFloor);
-    operatorB.onTrue(moveIntakeInside);
-    operatorX.onTrue(moveIntakeToShooter);
     operatorY.onTrue(moveIntakeToAmp);
+
+    operatorB.onTrue(new ParallelCommandGroup(
+        moveIntakeToShooter,
+        new InstantCommand(() -> {
+          lights.makeGreen();
+        }, lights)));
+
+    operatorX.onTrue(new ParallelCommandGroup(
+        moveIntakeInside,
+        new InstantCommand(() -> {
+          lights.makeRed();
+        }, lights)));
 
     { // Intake in
       operatorLB
@@ -170,6 +190,8 @@ public class RobotContainer {
           intake.moveAtSpeed(operator.getRightTriggerAxis() - operator.getLeftTriggerAxis());
         }, intake));
 
+    driverUpDPAD.onTrue(shootNote);
+
     { // Shoot to Speaker
       driverLB
           .onTrue(
@@ -177,6 +199,17 @@ public class RobotContainer {
                 shooter.shootSpeaker();
                 operator.setRumble(RumbleType.kBothRumble, 0.5);
               }, shooter))
+          .onFalse(
+              new InstantCommand(() -> {
+                shooter.stop();
+                operator.setRumble(RumbleType.kBothRumble, 0);
+              }, shooter));
+    }
+    {
+      driverX.onTrue(new RunCommand(() -> {
+        shooter.shootOver();
+        operator.setRumble(RumbleType.kBothRumble, 0.5);
+      }, shooter))
           .onFalse(
               new InstantCommand(() -> {
                 shooter.stop();
@@ -195,6 +228,21 @@ public class RobotContainer {
             operator.setRumble(RumbleType.kBothRumble, 0);
           }, shooter));
     }
+
+    {
+      driverY
+          .onTrue(new RunCommand(() -> {
+            shooter.shootAmp();
+            operator.setRumble(RumbleType.kBothRumble, .5);
+          }, shooter))
+          .onFalse(new InstantCommand(() -> {
+            shooter.stop();
+            operator.setRumble(RumbleType.kBothRumble, 0);
+          }, shooter));
+    }
+
+    // Reset zero position for intake
+    operatorBack.onTrue(resetIntakePosition);
 
     // Toggle Driving Mode
     driverStart.onTrue(toggledriveMode);
@@ -216,14 +264,15 @@ public class RobotContainer {
     driveTrain.setDefaultCommand(
         new RunCommand(() -> {
           driveTrain.drive(
-              driver.getRawAxis(DriverConstants.leftY) * DriverConstants.driveMult,
-              driver.getRawAxis(DriverConstants.leftX) * DriverConstants.driveMult,
-              driver.getRawAxis(DriverConstants.rightX) * DriverConstants.driveMult * .75,
+              driver.getRawAxis(DriverConstants.leftY),
+              driver.getRawAxis(DriverConstants.leftX),
+              driver.getRawAxis(DriverConstants.rightX),
               leftDPAD.getAsBoolean(),
               rightDPAD.getAsBoolean(),
               upDPAD.getAsBoolean(),
               driverRB.getAsBoolean(),
-              true);
+              true,
+              driver.getRightTriggerAxis());
         }, driveTrain));
 
     operatorStart.onTrue(toggleClimberLimit);
@@ -234,6 +283,13 @@ public class RobotContainer {
           climbers.runClimbers(operator.getLeftY(), operator.getRightY());
         }, climbers));
 
+    // Lights default
+    lights.setDefaultCommand(
+        new RunCommand(() -> {
+          lights.setColor(
+              shooter.getShooterVelocity());
+        }, lights));
+
   }
 
   /**
@@ -243,6 +299,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // TODO: Test and choose autos
+    // return m_chooser.getSelected();
     return m_chooser.getSelected();
   }
 }

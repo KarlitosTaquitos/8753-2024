@@ -44,13 +44,13 @@ public class DriveAmountEncoders extends Command {
             driveTrain.resetEncoders();
         }
 
-        driveTrain.drive(forwardPower, strafePower, turnPower, false, false, false, false, false);
+        driveTrain.drive(forwardPower, strafePower, turnPower, false, false, false, false, false, 0);
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        driveTrain.drive(0, 0, 0, false, false, false, false, false);
+        driveTrain.drive(0, 0, 0, false, false, false, false, false, 0);
     }
     
     // Returns true when the command should end.

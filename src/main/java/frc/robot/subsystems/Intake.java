@@ -22,10 +22,16 @@ public class Intake extends SubsystemBase {
 
   CANSparkMax intakeMotor;
 
+  // no more through shooter
   final int inside = 0;
-  final int shooter = -4;
+  final int shooter = 0;
   final int amp = -16;
-  final int floor = -43;
+  final int floor = -40;
+
+  // final int inside = 0;
+  // final int shooter = -3;
+  // final int amp = -16;
+  // final int floor = -43;
 
   final double manualMovementMult = 0.2;
 
@@ -41,7 +47,7 @@ public class Intake extends SubsystemBase {
     movementController.setI(0);
     movementController.setD(0);
     movementController.setFF(0);
-    movementController.setOutputRange(-.6, .8);
+    movementController.setOutputRange(-.8, .6);
 
     intakeMotor = new CANSparkMax(MotorControllerConstants.intakeMotor, MotorType.kBrushless);
 
@@ -49,7 +55,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void intake() {
-    intakeMotor.set(.75);
+    intakeMotor.set(.85);
   }
 
   public void stopIntake() {
@@ -109,6 +115,10 @@ public class Intake extends SubsystemBase {
       speed = 0;
     
     intakeMotor.set(speed);
+  }
+
+  public void resetEncoder() {
+    movementEncoder.setPosition(0);
   }
 
   @Override

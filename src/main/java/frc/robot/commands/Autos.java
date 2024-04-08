@@ -5,8 +5,8 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.DriveTrain;
@@ -22,6 +22,15 @@ public final class Autos {
   // Used for all note shooting. Potential tweaks
   public static Command shootNote(Intake i, Shooter s) {
     return new SequentialCommandGroup(
+        new RevShooter(s),
+        new RunCommand(() -> i.outtake(), i).withTimeout(.5),
+        new ParallelCommandGroup(
+            new InstantCommand(() -> i.stopIntake(), i),
+            new InstantCommand(() -> s.stop(), s)));
+  }
+
+  public static Command shootNoteOld(Intake i, Shooter s) {
+    return new SequentialCommandGroup(
         new RunCommand(() -> s.shootSpeaker(), s).withTimeout(.25),
         new RunCommand(() -> i.outtake(), i).withTimeout(.75),
         new ParallelCommandGroup(
@@ -32,6 +41,7 @@ public final class Autos {
   // Used in every auto. First step
   public static Command startInMiddleTwoNote(DriveTrain dt, Intake i, Shooter s) {
     return new SequentialCommandGroup(
+        new MoveIntakeToShooter(i).withTimeout(.25),
         shootNote(i, s),
         new ParallelCommandGroup(
             new DriveAmount(-.3, 0, 0, dt, 1.5),
@@ -39,10 +49,13 @@ public final class Autos {
                 new MoveIntakeToFloor(i).withTimeout(1),
                 new RunCommand(() -> i.intake(), i).withTimeout(1))),
         new ParallelCommandGroup(
-            new DriveAmount(.3, 0, 0, dt, 1.5),
+            new SequentialCommandGroup(
+                new DriveAmount(.35, 0, 0, dt, 1),
+                new DriveAmount(.2, 0, 0, dt, .5)
+            ),
             new SequentialCommandGroup(
                 new RunCommand(() -> i.stopIntake(), i).withTimeout(1),
-                new MoveIntakeInside(i).withTimeout(1))),
+                new MoveIntakeToShooter(i).withTimeout(1))),
         shootNote(i, s));
   }
 
@@ -51,16 +64,16 @@ public final class Autos {
     return new SequentialCommandGroup(
         new ParallelCommandGroup(
             new SequentialCommandGroup(
-                new DriveAmount(-.4, -.4, -.35, dt, .75),
-                new DriveAmount(-.4, 0, 0, dt, .75)),
+                new DriveAmount(-.4, -.25, -.22, dt, .95),
+                new DriveAmount(-.4, 0, 0, dt, .6)),
             new SequentialCommandGroup(
                 new MoveIntakeToFloor(i).withTimeout(1),
                 new RunCommand(() -> i.intake(), i).withTimeout(1.75))),
         new ParallelCommandGroup(
-            new DriveAmount(.34, .3, .1, dt, 1.5),
+            new DriveAmount(.34, .2, .1, dt, 1.5),
             new SequentialCommandGroup(
                 new RunCommand(() -> i.stopIntake(), i).withTimeout(.5),
-                new MoveIntakeInside(i).withTimeout(1))),
+                new MoveIntakeToShooter(i).withTimeout(1))),
         new DriveAmount(.2, 0, 0, dt, 1),
         shootNote(i, s));
   }
@@ -80,7 +93,7 @@ public final class Autos {
             new DriveAmount(.34, .3, .1, dt, 1.5),
             new SequentialCommandGroup(
                 new RunCommand(() -> i.stopIntake(), i).withTimeout(.5),
-                new MoveIntakeInside(i).withTimeout(1))),
+                new MoveIntakeToShooter(i).withTimeout(1))),
         new DriveAmount(.2, 0, 0, dt, .5),
         shootNote(i, s));
   }
@@ -90,7 +103,7 @@ public final class Autos {
     return new SequentialCommandGroup(
         new ParallelCommandGroup(
             new SequentialCommandGroup(
-                new DriveAmount(-.4, .4, .35, dt, .75),
+                new DriveAmount(-.4, .4, .35, dt, .65),
                 new DriveAmount(-.4, 0, 0, dt, .75)),
             new SequentialCommandGroup(
                 new MoveIntakeToFloor(i).withTimeout(1),
@@ -99,7 +112,7 @@ public final class Autos {
             new DriveAmount(.3, -.3, -.09, dt, 1.5),
             new SequentialCommandGroup(
                 new RunCommand(() -> i.stopIntake(), i).withTimeout(.5),
-                new MoveIntakeInside(i).withTimeout(1))),
+                new MoveIntakeToShooter(i).withTimeout(1))),
         new DriveAmount(.2, 0, 0, dt, 1),
         shootNote(i, s));
   }
@@ -119,7 +132,7 @@ public final class Autos {
             new DriveAmount(.3, -.3, -.09, dt, 1.5),
             new SequentialCommandGroup(
                 new RunCommand(() -> i.stopIntake(), i).withTimeout(.5),
-                new MoveIntakeInside(i).withTimeout(1))),
+                new MoveIntakeToShooter(i).withTimeout(1))),
         new DriveAmount(.2, 0, 0, dt, .5),
         shootNote(i, s));
   }
@@ -152,7 +165,7 @@ public final class Autos {
   // Start Left of amp. Both sides
   public static Command startSourceSideOneNoteTaxi(DriveTrain dt, Intake i, Shooter s) {
     return new SequentialCommandGroup(
-        shootNote(i, s),
+        shootNote(i, s).withTimeout(4),
         new DriveAmount(-.3, 0, 0, dt, 4).withTimeout(6));
   }
 

@@ -27,7 +27,7 @@ public class DriveTrain extends SubsystemBase {
   boolean fieldOriented = true;
 
   double appliedTurn = 0;
-
+  double appliedStrafe = 0;
   double appliedForward = 0;
 
   /** Creates a new DriveTrain. */
@@ -113,7 +113,17 @@ public class DriveTrain extends SubsystemBase {
     navx.reset();
   }
 
-  public void drive(double forward, double strafe, double turn, boolean leftOverride, boolean rightOverride, boolean forwardOverride, boolean stop, boolean teleOp) {
+  public void drive(double forward, double strafe, double turn, boolean leftOverride, boolean rightOverride, boolean forwardOverride, boolean stop, boolean teleOp, double fullPowerOverride) {
+    // Calculate drive multiplier
+    boolean fullPowerActive = fullPowerOverride > 0.1;
+    double mult = Constants.DriverConstants.driveMult;
+    double turnMult = 0.75;
+
+    if (fullPowerActive) {
+      mult = 1;
+      turnMult = 1;
+    }
+    
     // dead zone, doesn't work
     if (forward < 0.05 && forward > -0.05)
       forward = 0;
@@ -124,6 +134,7 @@ public class DriveTrain extends SubsystemBase {
     
     boolean override = leftOverride || rightOverride || forwardOverride;
     
+    // Override turn
     if(leftOverride || rightOverride) {
       if (leftOverride) {
         appliedTurn = -.2;
@@ -132,21 +143,22 @@ public class DriveTrain extends SubsystemBase {
         appliedTurn = .2;
       }
     } else {
-      appliedTurn = turn;
+      appliedTurn = turn * turnMult;
     }
 
     if(forwardOverride) {
       appliedForward = .2;
     } else {
-      appliedForward = forward;
+      appliedForward = forward * mult;
     }
 
-    
+    appliedStrafe = strafe * mult;
+        
     if(!stop) {
       if (fieldOriented && !override) {
-          driveFieldOriented(appliedForward, strafe, appliedTurn);
+          driveFieldOriented(appliedForward, appliedStrafe, appliedTurn);
         } else {
-          driveRobotOriented(appliedForward, strafe, appliedTurn);
+          driveRobotOriented(appliedForward, appliedStrafe, appliedTurn);
         }
         if(teleOp) {
           setToCoast();

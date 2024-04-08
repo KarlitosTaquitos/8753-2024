@@ -49,7 +49,7 @@ public class DriveAmount extends Command {
       timer.restart();
     }
 
-    driveTrain.drive(forward, strafe, turn, false, false, false, false, false);
+    driveTrain.drive(forward, strafe, turn, false, false, false, false, false, 0);
       /* 
     if(turn == 0) {
       if(initialDegree > driveTrain.getDegree()) {
@@ -62,7 +62,7 @@ public class DriveAmount extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    driveTrain.drive(0, 0, 0, false, false, false, false, false);
+    driveTrain.drive(0, 0, 0, false, false, false, false, false, 0);
   }
 
   // Returns true when the command should end.

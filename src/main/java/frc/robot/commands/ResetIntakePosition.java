@@ -7,20 +7,19 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Intake;
 
-public class MoveIntakeToShooter extends Command {
-  Intake intake;
-  /** Creates a new MoveIntakeToFloor. */
-  public MoveIntakeToShooter(Intake i) {
+public class ResetIntakePosition extends Command {
+  private Intake intake;
+  /** Creates a new ResetDegree. */
+  public ResetIntakePosition(Intake intake) {
     // Use addRequirements() here to declare subsystem dependencies.
-    intake = i;
-    addRequirements(intake);
+    this.intake = intake;
+    addRequirements(this.intake);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    intake.moveToShotoer();
-    intake.enablePID();
+    intake.resetEncoder();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -29,12 +28,11 @@ public class MoveIntakeToShooter extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-     intake.disablePID();}
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }
