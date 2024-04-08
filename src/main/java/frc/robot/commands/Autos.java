@@ -103,7 +103,7 @@ public final class Autos {
     return new SequentialCommandGroup(
         new ParallelCommandGroup(
             new SequentialCommandGroup(
-                new DriveAmount(-.4, .4, .35, dt, .65),
+                new DriveAmount(-.4, .4, .35, dt, .6),
                 new DriveAmount(-.4, 0, 0, dt, .75)),
             new SequentialCommandGroup(
                 new MoveIntakeToFloor(i).withTimeout(1),
