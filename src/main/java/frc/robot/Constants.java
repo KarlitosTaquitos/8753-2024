@@ -23,6 +23,8 @@ public final class Constants {
     public static final int controllerPort = 0;
     public static final int leftX = 0;
     public static final int leftY = 1;
+    public static final int lT = 2;
+    public static final int rT = 3;
     public static final int rightX = 4;
     public static final int rightY = 5;
 
@@ -31,11 +33,12 @@ public final class Constants {
     public static final int x = 3;
     public static final int y = 4;
     public static final int lB = 5;
+    public static final int rB = 6;
 
     public static final int start = 8;
     public static final int back = 7;
 
-    public static final double driveMult = 0.1;
+    public static final double driveMult = .85;
   }
 
   public static class OperatorConstants {
@@ -48,6 +51,8 @@ public final class Constants {
     public static final int lB = 5;
     public static final int rB = 6;
     public static final int start = 8;
+    public static final int back = 7;
+
   }
 
   public static class MotorControllerConstants {
@@ -59,14 +64,23 @@ public final class Constants {
     public static final int intakeMovement = 5;
     public static final int intakeMotor = 6;
 
-    public static final int lClimber = 9;
-    public static final int rClimber = 10;
+    public static final int lClimber = 10;
+    public static final int rClimber = 9;
 
-    public static final int lShooter = 16;
-    public static final int rShooter = 17;
+    public static final int topShooter = 16;
+    public static final int middleShooter = 17;
+    public static final int bottomShooter = 18;
+
+    public static final int LEDs = 0;
   }
 
   public static class SensorConstants {
     public static final int rangeFinderPort = 0;
+  }
+  //Inches and seconds
+  public static class EncoderConstants {
+    public static final double wheelRadius = 4;
+    public static final double distancePerRevolution = 4 * 2 * Math.PI;
+    public static final double velocityConversionFactor = distancePerRevolution * 60;
   }
 }
